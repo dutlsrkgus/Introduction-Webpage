@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>나에게 맞는 사서 유형</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap">
+<style>
+/* Layout: a single picture-book column, one screen per step; paper-cream pages with teal/lime from the card news as the department's ink. */
+:root{
+  color-scheme: light;
+  --paper:#FBF6EC; --paper-2:#F3EADA; --card:#FFFDF8;
+  --ink:#3A322B; --ink-soft:#6E6255; --line:#E3D6C1;
+  --teal:#0F6E66; --teal-deep:#0B554F; --teal-soft:#DCEDE8; --lime:#CFDD5C; --lime-soft:#EEF3C4;
+  --display:"Gowun Batang", "Nanum Myeongjo", "AppleMyungjo", serif;
+  --body:"Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--paper);color:var(--ink)}
+body{word-break:keep-all;overflow-wrap:break-word;font-family:var(--body);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+a{color:var(--teal)}
+:focus-visible{outline:3px solid var(--lime);outline-offset:2px;border-radius:8px}
+.wrap{max-width:600px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* top bar */
+.top{border-bottom:1px solid var(--line);background:var(--paper)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px}
+.brand{white-space:nowrap;font-family:var(--display);font-weight:700;color:var(--teal);font-size:15px;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.nav{display:flex;gap:2px}
+.nav button{white-space:nowrap;background:none;border:0;padding:6px 8px;border-radius:999px;font-size:14px;color:var(--ink-soft);cursor:pointer}
+.nav button[aria-current="page"]{background:var(--teal-soft);color:var(--teal-deep)}
+
+.view{padding-block:28px 64px}
+h1,h2,h3{font-family:var(--display);font-weight:700;text-wrap:balance;margin:0;line-height:1.3}
+h1{font-size:clamp(30px,8vw,40px);color:var(--teal-deep)}
+h2{font-size:24px;color:var(--teal-deep)}
+h3{font-size:18px}
+p{margin:0}
+.eyebrow{font-size:13px;letter-spacing:.06em;color:var(--teal);font-weight:400}
+.muted{color:var(--ink-soft)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;border:2px solid var(--teal);background:var(--teal);color:#fff;padding:14px 26px;font-size:17px;cursor:pointer;transition:transform .15s ease, background .15s}
+.btn:hover{background:var(--teal-deep)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;color:var(--teal)}
+.btn.ghost:hover{background:var(--teal-soft)}
+.btn.small{padding:10px 18px;font-size:15px}
+
+/* start */
+.hero{display:grid;gap:18px;text-align:left}
+.hero .lead{font-size:17px;color:var(--ink-soft)}
+.shelf{display:grid;grid-template-columns:repeat(4,1fr);gap:4px 6px;margin-top:6px;padding:14px 10px 0;background:var(--paper-2);border-radius:24px}
+.shelf .cell{display:flex;flex-direction:column;align-items:center}
+.shelf .cell svg{width:100%;max-width:110px;height:auto}
+.shelf .plank{grid-column:1/-1;height:10px;background:#D9C3A0;border-radius:6px;margin:-6px -4px 12px;box-shadow:inset 0 -3px 0 #C6AC84}
+.start-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.count-line{font-size:14px;color:var(--ink-soft)}
+.count-line b{color:var(--teal);font-weight:400}
+
+/* quiz */
+.progress{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.track{flex:1;height:10px;background:var(--paper-2);border-radius:999px;overflow:hidden}
+.fill{height:100%;background:var(--teal);border-radius:999px;transition:width .3s ease}
+.qnum{font-size:14px;color:var(--ink-soft);font-variant-numeric:tabular-nums;min-width:48px;text-align:right}
+.qtext{font-size:clamp(22px,6vw,28px);margin-bottom:24px;color:var(--ink)}
+.opts{display:grid;gap:12px}
+.opt{display:flex;gap:14px;align-items:center;text-align:left;width:100%;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px 18px;font-size:16px;cursor:pointer;transition:border-color .15s, background .15s, transform .15s}
+.opt:hover{border-color:var(--teal)}
+.opt.sel{background:var(--lime-soft);border-color:var(--teal)}
+.opt .k{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--paper-2);font-family:var(--display);font-weight:700;color:var(--teal)}
+.opt.sel .k{background:var(--teal);color:#fff}
+.quiz-foot{display:flex;justify-content:space-between;margin-top:22px}
+.linkbtn{background:none;border:0;color:var(--ink-soft);cursor:pointer;padding:6px 2px;font-size:15px}
+.linkbtn:hover{color:var(--teal)}
+.linkbtn:disabled{opacity:.35;cursor:default}
+
+/* result */
+.rcard{border-radius:28px;padding:22px 20px 26px;text-align:center;display:grid;gap:6px;justify-items:center;background:var(--tbg);border:2px solid var(--tline)}
+.rcard svg{width:min(260px,70%);height:auto}
+.rcard .pre{font-size:15px;color:var(--ink-soft)}
+.rcard .name{font-size:clamp(28px,8vw,36px);color:var(--tink)}
+.rcard .animal{font-size:14px;color:var(--ink-soft)}
+.rcard .tag{font-size:17px;max-width:30ch}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.chip{background:var(--card);border:1px solid var(--tline);color:var(--tink);border-radius:999px;padding:4px 12px;font-size:14px}
+.ractions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0 8px}
+.sec{margin-top:36px;display:grid;gap:14px}
+.sec-head{display:grid;gap:2px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
+.tasks{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.tasks li{display:flex;gap:12px;align-items:flex-start}
+.tasks li::before{content:"";flex:none;width:10px;height:10px;margin-top:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 3px var(--lime-soft)}
+.day{list-style:none;margin:0;padding:0;display:grid}
+.day li{display:grid;grid-template-columns:58px 1fr;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.day li:last-child{border-bottom:0}
+.day time{font-variant-numeric:tabular-nums;color:var(--teal);font-size:15px}
+.prep{display:grid;gap:14px}
+.prep-row{display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:start}
+.prep-row .lbl{font-size:14px;color:var(--ink-soft);padding-top:4px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--teal-soft);color:var(--teal-deep);border-radius:999px;padding:4px 12px;font-size:14px}
+.pill.lime{background:var(--lime-soft);color:#4F5717}
+.track-badge{display:flex;gap:12px;align-items:center;background:var(--teal);color:#fff;border-radius:16px;padding:14px 16px}
+.track-badge b{font-family:var(--display);font-size:19px}
+.track-badge span{font-size:14px;opacity:.9}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini{display:grid;justify-items:center;gap:2px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px 8px 14px;cursor:pointer;transition:border-color .15s, transform .15s}
+.mini:hover{border-color:var(--teal);transform:translateY(-2px)}
+.mini svg{width:84px;height:auto}
+.mini .lbl{font-size:13px;color:var(--ink-soft)}
+.mini .nm{font-family:var(--display);font-weight:700;font-size:15px;color:var(--ink)}
+.stats{display:grid;gap:8px}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) 2fr 44px;gap:10px;align-items:center;font-size:14px}
+.srow .bar{height:12px;background:var(--paper-2);border-radius:999px;overflow:hidden}
+.srow .bar i{display:block;height:100%;border-radius:999px;background:#B9C9C5}
+.srow.me .bar i{background:var(--teal)}
+.srow.me .n{color:var(--teal-deep)}
+.srow .pct{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.note{font-size:13px;color:var(--ink-soft)}
+.cta{margin-top:40px;background:var(--teal);color:#fff;border-radius:24px;padding:22px 20px;display:grid;gap:12px}
+.cta h3{color:#fff;font-size:20px}
+.cta .btn{background:var(--lime);border-color:var(--lime);color:var(--teal-deep);justify-self:start}
+.cta .btn:hover{background:#DDE87A}
+
+/* dex */
+.dex{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
+.dcard{display:grid;justify-items:center;text-align:center;gap:4px;background:var(--tbg);border:2px solid var(--tline);border-radius:22px;padding:14px 10px 16px;cursor:pointer;transition:transform .15s}
+.dcard:hover{transform:translateY(-3px)}
+.dcard svg{width:min(120px,90%);height:auto}
+.dcard .nm{font-family:var(--display);font-weight:700;font-size:16px;color:var(--tink);line-height:1.35}
+.dcard .an{font-size:13px;color:var(--ink-soft)}
+@media (min-width:560px){.dex{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* dept */
+.toc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.toc button{text-align:left;background:var(--card);border:2px solid var(--teal);border-radius:18px;padding:14px;cursor:pointer;display:grid;gap:2px}
+.toc button b{font-family:var(--display);font-size:16px;color:var(--teal-deep)}
+.toc button span{font-size:13px;color:var(--ink-soft)}
+.chapter{margin-top:44px;display:grid;gap:16px;scroll-margin-top:16px}
+.chapter > .ch-label{font-size:13px;color:var(--teal);letter-spacing:.06em}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:480px){.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.box{background:var(--card);border:1.5px solid var(--teal);border-radius:18px;padding:14px;display:grid;gap:6px;align-content:start;min-width:0}
+.box b{font-family:var(--display);color:var(--teal-deep);font-size:16px;padding-bottom:6px;border-bottom:2.5px solid var(--lime)}
+.box p{font-size:14.5px}
+.year{display:grid;gap:8px}
+.year + .year{margin-top:14px}
+.year h3{font-size:16px;color:var(--teal-deep)}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.fact{background:var(--teal-soft);border-radius:16px;padding:14px;display:grid;gap:2px}
+.fact b{font-family:var(--display);font-size:22px;color:var(--teal-deep)}
+.fact span{font-size:13px;color:var(--ink-soft)}
+@media (max-width:480px){.facts{gap:8px}.fact{padding:12px 10px}.fact b{font-size:18px}.fact span{font-size:12px}}
+.space{display:grid;gap:0}
+.space li{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.space li:last-child{border-bottom:0}
+.space b{font-family:var(--display);color:var(--teal-deep)}
+ul.space{list-style:none;margin:0;padding:0}
+.big-cert{background:var(--teal);color:#fff;border-radius:20px;padding:18px;text-align:center;display:grid;gap:2px}
+.big-cert b{font-family:var(--display);font-size:30px;color:var(--lime)}
+.faq{display:grid;gap:10px}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.faq summary{cursor:pointer;font-family:var(--display);font-weight:700;color:var(--teal-deep);list-style:none;display:flex;gap:10px}
+.faq summary::before{content:"Q";flex:none;width:24px;height:24px;border-radius:8px;background:var(--teal);color:#fff;display:grid;place-items:center;font-size:14px;font-family:var(--body)}
+.faq details p{margin-top:8px;padding-left:34px;font-size:15px}
+.contact{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.contact li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:15px}
+.contact li span:first-child{color:var(--teal);font-size:14px}
+.contact li span:last-child{overflow-wrap:anywhere;user-select:all}
+.foot-note{margin-top:28px;font-size:13px;color:var(--ink-soft);text-align:center}
+
+.tasks.panel,.day.panel,ul.space.panel{padding:8px 18px}
+.tasks.panel{padding-block:16px}
+
+/* dept: book journey */
+.dhero{display:grid;gap:14px}
+.dhero-art svg{width:100%;max-width:360px;height:auto}
+.dhero h1{font-size:clamp(34px,10vw,48px)}
+.dlead{font-size:17px}
+.journey{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:18px;position:relative}
+.journey::before{content:"";position:absolute;left:21px;top:20px;bottom:20px;border-left:3px dashed #B8D3CC}
+.jstop{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;position:relative}
+.jmark{width:44px;height:44px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:18px;box-shadow:0 0 0 5px var(--paper);position:relative;z-index:1}
+.jmark.start,.jstop.end .jmark{background:var(--lime);color:var(--teal-deep);font-size:13px}
+.jcard{background:var(--tbg);border:2px solid var(--tline);border-radius:22px;padding:16px;display:grid;gap:8px;min-width:0}
+.jstop:first-child .pill{background:var(--teal-soft)}
+.jstop.end .jcard{background:var(--card);border-color:var(--line)}
+.jtop{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}
+.jtop h3{font-size:20px;color:var(--tink)}
+.jtrack{font-size:13px;color:var(--tink);border:1px solid var(--tline);background:var(--card);border-radius:999px;padding:1px 10px}
+.jq{font-family:var(--display);font-weight:700;color:var(--ink)}
+.jcard .pill{background:var(--card);color:var(--tink)}
+.jwho{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+.jfriend{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--tline);border-radius:16px;padding:4px 12px 4px 4px;cursor:pointer;text-align:left}
+.jfriend:hover{border-color:var(--teal)}
+.jfriend svg{width:46px;height:auto;flex:none}
+.jfriend small{display:block;font-size:12px;color:var(--ink-soft);line-height:1.3}
+.jfriend b{font-family:var(--display);font-size:14.5px;color:var(--ink);line-height:1.3}
+.practice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:480px){.practice{grid-template-columns:1fr}}
+.pcard{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--teal);border-radius:16px;padding:14px;display:grid;gap:4px;align-content:start}
+.pcard b{font-family:var(--display);font-size:17px;color:var(--teal-deep)}
+.pcard p{font-size:14.5px;color:var(--ink-soft)}
+.pwhen{justify-self:start;font-size:12.5px;background:var(--lime-soft);color:#4F5717;border-radius:999px;padding:1px 10px}
+.season{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.season-col{background:#EEF4DC;border-radius:20px;padding:14px 16px}
+.season-col.fall{background:#F6E6CB}
+.season-tag{font-family:var(--display);font-weight:700;color:var(--teal-deep);font-size:17px}
+.season-col ul{margin:8px 0 0;padding-left:18px;display:grid;gap:4px;font-size:15px}
+.marks{display:flex;flex-wrap:wrap;gap:8px}
+.mark{background:var(--card);border:1px solid var(--line);border-radius:6px 6px 14px 14px;border-top:6px solid var(--lime);padding:8px 14px;display:grid}
+.mark b{font-family:var(--display);color:var(--teal-deep)}
+.mark span{font-size:13px;color:var(--ink-soft)}
+.ticket{background:var(--teal);color:#fff;border-radius:22px;padding:20px;text-align:center;position:relative;overflow:hidden}
+.ticket::before,.ticket::after{content:"";position:absolute;top:50%;width:26px;height:26px;margin-top:-13px;border-radius:50%;background:var(--paper)}
+.ticket::before{left:-13px}.ticket::after{right:-13px}
+.ticket div{display:grid;gap:2px}
+.ticket b{font-family:var(--display);font-size:34px;color:var(--lime)}
+.guides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:480px){.guides{grid-template-columns:1fr}}
+.guide{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px;min-width:0}
+.mono{flex:none;width:44px;height:44px;border-radius:50%;background:var(--teal-soft);color:var(--teal-deep);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:19px}
+.guide b{font-family:var(--display);font-size:17px;margin-right:6px}
+.guide .role{font-size:13px;color:var(--teal)}
+.guide p{font-size:14px;color:var(--ink-soft)}
+.places{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.place{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;background:var(--card);border:1.5px solid var(--teal);border-radius:18px;padding:14px}
+.pin{width:30px;height:30px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);background:var(--lime);border:2px solid var(--teal);margin-top:2px}
+.place b{font-family:var(--display);font-size:17px;color:var(--teal-deep);margin-right:8px}
+.pkind{font-size:12.5px;background:var(--teal-soft);color:var(--teal-deep);border-radius:999px;padding:1px 9px;white-space:nowrap}
+.place p{font-size:14.5px;color:var(--ink-soft);margin-top:2px}
+.guide svg{width:72px;height:72px;flex:none}
+.guide{align-items:flex-start}
+.ginfo{display:grid;gap:6px;min-width:0}
+.guide .mail{font-size:14px;color:var(--ink-soft);user-select:all;overflow-wrap:anywhere}
+.guide .pill{font-size:13px;padding:2px 10px}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(58,50,43,.55);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:50}
+.sheet{background:var(--paper);border-radius:24px;padding:18px;max-width:420px;width:100%;max-height:100%;overflow:auto;display:grid;gap:12px;justify-items:center;text-align:center}
+.sheet img{width:100%;border-radius:16px;border:1px solid var(--line)}
+.sheet .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:60}
+
+.enter{animation:rise .35s ease both}
+@keyframes rise{from{transform:translateY(8px);opacity:.4}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <button class="brand" id="go-home" type="button">대구대학교 문헌정보학과</button>
+    <nav class="nav" aria-label="메뉴">
+            <button type="button" id="nav-types" data-go="types">직업 도감</button>
+      <button type="button" id="nav-dept" data-go="dept">학과 소개</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- START -->
+  <section class="view wrap" id="v-start">
+    <div class="hero">
+      <p class="eyebrow">미리 만나는 문헌정보학과</p>
+      <h1>문헌정보학과를 졸업하면<br>나는 어떤 일을 할까?</h1>
+      <p class="lead">질문 10개에 답하면 문헌정보학과를 졸업하고 갈 수 있는 여덟 가지 직업 중 나와 닮은 직업을 알려 드려요. 그 직업을 대구대 문헌정보학과에서 어떻게 준비하는지도 함께 보여 드릴게요.</p>
+      <div class="shelf" id="shelf" aria-label="여덟 가지 직업 캐릭터"></div>
+      <div class="start-actions">
+        <button class="btn" type="button" id="start-btn">테스트 시작하기</button>
+        <button class="btn ghost" type="button" data-go="types">직업 먼저 구경하기</button>
+      </div>
+      <p class="count-line" id="count-line">10문항 · 약 2분</p>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="view wrap" id="v-quiz" hidden>
+    <div class="progress">
+      <div class="track" role="progressbar" aria-valuemin="1" aria-valuemax="10" id="pbar"><div class="fill" id="pfill"></div></div>
+      <span class="qnum" id="qnum">1 / 10</span>
+    </div>
+    <div id="qbox" class="enter">
+      <h2 class="qtext" id="qtext"></h2>
+      <div class="opts" id="opts"></div>
+    </div>
+    <div class="quiz-foot">
+      <button class="linkbtn" type="button" id="prev-btn">← 이전 질문</button>
+      <button class="linkbtn" type="button" id="quit-btn">처음으로</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="view wrap" id="v-result" hidden></section>
+
+  <!-- DEX -->
+  <section class="view wrap" id="v-types" hidden>
+    <p class="eyebrow">직업 도감</p>
+    <h1>나에게 꼭 맞는<br>직업 친구는?</h1>
+    <p class="muted" style="margin-top:10px">문헌정보학과를 졸업하면 갈 수 있는 길이에요. 궁금한 친구를 눌러 보세요.</p>
+    <div class="dex" id="dex"></div>
+    <div class="cta">
+      <h3>나는 어느 친구와 닮았을까?</h3>
+      <p>질문 10개면 알 수 있어요.</p>
+      <button class="btn small" type="button" data-start>테스트 하러 가기</button>
+    </div>
+  </section>
+
+  <!-- DEPT -->
+  <section class="view wrap" id="v-dept" hidden>
+    <div class="dhero">
+      <div class="dhero-art" aria-hidden="true">
+        <svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg">
+          <path d="M70 128 C 120 150, 160 70, 210 92 S 280 40, 296 26" fill="none" stroke="#0F6E66" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+          <g stroke="#6B5444" stroke-width="2.4" stroke-linejoin="round">
+            <path d="M20 118 q30 -12 56 0 v38 q-26 -10 -56 0z" fill="#FFF4CF"/>
+            <path d="M132 118 q-30 -12 -56 0 v38 q26 -10 56 0z" fill="#DCEDE8"/>
+            <path d="M76 118 v38"/>
+            <path d="M30 128 q18 -6 36 0 M30 137 q18 -6 36 0 M86 128 q18 -6 36 0 M86 137 q18 -6 36 0" fill="none" stroke-width="1.4" opacity=".5"/>
+            <path d="M296 26 v-20 l18 7 l-18 7" fill="#CFDD5C"/>
+          </g>
+          <circle cx="132" cy="104" r="5" fill="#CFDD5C"/><circle cx="210" cy="92" r="5" fill="#CFDD5C"/><circle cx="262" cy="52" r="5" fill="#CFDD5C"/>
+        </svg>
+      </div>
+      <p class="eyebrow">대구대학교 문헌정보학과</p>
+      <h1>책 한 권의 여행</h1>
+      <p class="dlead">도서관 서가에 꽂힌 책 한 권은 그냥 거기 있는 게 아니에요. 누군가 고르고, 이름표를 붙이고, 찾는 길을 만들고, 필요한 사람에게 건네고, 오래 지켜 온 거예요. 문헌정보학과는 책과 정보가 필요한 사람에게 닿기까지의 모든 길을 배우는 곳이에요.</p>
+      <div class="facts">
+        <div class="fact"><b>1980</b><span>도서관학과로 출발한 해</span></div>
+        <div class="fact"><b>6개</b><span>전공 트랙</span></div>
+        <div class="fact"><b>정사서 2급</b><span>졸업과 함께 받는 국가자격</span></div>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <p class="ch-label">여행 경로</p>
+      <h2>책 한 권을 따라가 볼까요?</h2>
+      <p class="muted">정류장마다 배우는 과목과, 그 일을 직업으로 삼는 동물 친구가 기다리고 있어요.</p>
+      <ol class="journey" id="journey"></ol>
+    </div>
+
+    <div class="chapter">
+      <p class="ch-label">실습이 많은 학과</p>
+      <h2>교과서 밖에서 직접 해 봐요</h2>
+      <p>대구대 문헌정보학과는 배운 것을 현장에서 해 보는 기회가 많아요. 우리나라를 대표하는 도서관부터 학교도서관, 기업까지 실습을 나가요.</p>
+      <h3 style="margin-top:4px">이런 곳에서 실습해요</h3>
+      <ul class="places" id="places"></ul>
+      <h3 style="margin-top:8px">학교 안에서도 직접 해 봐요</h3>
+      <div class="practice" id="practice"></div>
+    </div>
+
+    <div class="chapter">
+      <p class="ch-label">학과생활</p>
+      <h2>함께 걷는 1년</h2>
+      <div class="season">
+        <div class="season-col"><span class="season-tag">1학기</span><ul><li>학과 MT</li><li>봄축제</li><li>도서관 견학 · 탐방</li><li>전문가 특강</li><li>공모전</li></ul></div>
+        <div class="season-col fall"><span class="season-tag">2학기</span><ul><li>가을 축제</li><li>도서관 견학</li><li>모의면접</li><li>문정인의 밤</li><li>대경문련</li></ul></div>
+      </div>
+      <h3 style="margin-top:8px">관심사대로 고르는 동아리</h3>
+      <div class="marks" id="marks"></div>
+      <p class="note">공부는 컴퓨터 실습 강의실, 세미나실, 스터디룸, 라운지에서 해요. 팀 과제는 스터디룸에서, 공강에는 라운지에서 쉬어요.</p>
+    </div>
+
+    <div class="chapter">
+      <p class="ch-label">여행이 끝나면</p>
+      <h2>졸업과 함께 손에 쥐는 것</h2>
+      <div class="ticket">
+        <div><span class="note" style="color:inherit;opacity:.85">시험 없이, 졸업과 동시에</span><b>정사서 2급</b><span>국가자격증</span></div>
+      </div>
+      <div class="grid2">
+        <div class="box"><b>사서교사</b><p>교직과정을 이수하면 정교사(사서교사) 자격증을 받아 학교도서관에서 일할 수 있어요. 교직과정은 정원의 약 10%가 이수할 수 있어요.</p></div>
+        <div class="box"><b>함께 준비하는 자격증</b><p>독서지도사, 기록물관리전문요원, 컴퓨터활용능력, ADP, SQLD, 정보처리기사</p></div>
+      </div>
+      <p>3, 4학년에는 자기소개서와 면접 준비 같은 취업 활동도 학과에서 도와줘요. 졸업 후에 갈 수 있는 여덟 가지 직업은 직업 도감에서 볼 수 있어요.</p>
+      <button class="btn small ghost" type="button" data-go="types" style="justify-self:start">직업 도감 보기</button>
+    </div>
+
+    <div class="chapter">
+      <p class="ch-label">여행 안내자</p>
+      <h2>교수진</h2>
+      <div class="guides" id="guides"></div>
+    </div>
+
+    <div class="chapter">
+      <p class="ch-label">자주 묻는 질문</p>
+      <h2>출발 전에 궁금한 것</h2>
+      <div class="faq">
+        <details><summary>책을 아주 좋아해야 하나요?</summary><p>좋아하면 도움이 되지만 필수는 아니에요. 궁금한 걸 끝까지 찾아보는 호기심과, 디지털 기술에 대한 관심이 더 중요해요.</p></details>
+        <details><summary>졸업하면 사서밖에 못 하나요?</summary><p>도서관과 기록관은 물론 출판, 데이터 관리, 연구소, IT 기업까지 정보가 필요한 곳이면 어디든 갈 수 있어요.</p></details>
+        <details><summary>입학 전에 무엇을 준비하면 좋을까요?</summary><p>궁금한 걸 스스로 검색해 보는 습관, 뉴스와 데이터에 대한 관심, 간단한 엑셀 실력이면 충분해요.</p></details>
+        <details><summary>장학금은 어떤가요?</summary><p>대구대 장학금 수혜율은 93.86%예요. 100명 중 93명이 혜택을 받아요. (2025 정보공시 기준)</p></details>
+      </div>
+      <ul class="contact">
+        <li><span>학과 홈페이지</span><span><a href="https://lis.daegu.ac.kr" target="_blank" rel="noopener">lis.daegu.ac.kr</a></span></li>
+        <li><span>인스타그램</span><span><a href="https://www.instagram.com/daegu_univ_lis" target="_blank" rel="noopener">@daegu_univ_lis</a></span></li>
+        <li><span>학과사무실</span><span>053-850-6350</span></li>
+        <li><span>주소</span><span>경북 경산시 진량읍 대구대로 201</span></li>
+      </ul>
+      <p class="foot-note">정확한 모집 및 학사 정보는 해당 학년도의 공식 안내를 확인해 주세요.</p>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="sheet">
+    <h3 id="modal-title">결과 이미지</h3>
+    <img id="modal-img" alt="내 직업 유형 결과 카드">
+    <p class="note" id="modal-note">휴대폰에서는 이미지를 길게 눌러 저장할 수 있어요.</p>
+    <div class="row">
+      <button class="btn small" type="button" id="dl-btn" hidden>이미지 저장하기</button>
+      <button class="btn small ghost" type="button" id="modal-close">닫기</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- 캐릭터 (SVG) ---------- */
+const S = '#6B5444';
+let UID = 0;
+const grad = (id, l, b, d) => `<radialGradient id="${id}" cx="38%" cy="30%" r="78%"><stop offset="0" stop-color="${l}"/><stop offset=".62" stop-color="${b}"/><stop offset="1" stop-color="${d}"/></radialGradient>`;
+const eyes = (a, b, y) => `<g stroke="none"><ellipse cx="${a}" cy="${y}" rx="4.6" ry="5.6" fill="#3B2E26"/><ellipse cx="${b}" cy="${y}" rx="4.6" ry="5.6" fill="#3B2E26"/><circle cx="${a+1.6}" cy="${y-2}" r="1.6" fill="#fff"/><circle cx="${b+1.6}" cy="${y-2}" r="1.6" fill="#fff"/></g>`;
+const blush = (a, b, y) => `<g stroke="none" fill="#F09A9A" opacity=".45"><ellipse cx="${a}" cy="${y}" rx="8" ry="5"/><ellipse cx="${b}" cy="${y}" rx="8" ry="5"/></g>`;
+const feet = f => `<ellipse cx="80" cy="190" rx="15" ry="8" fill="${f}"/><ellipse cx="120" cy="190" rx="15" ry="8" fill="${f}"/>`;
+const body = f => `<ellipse cx="100" cy="152" rx="44" ry="40" fill="${f}"/>`;
+const belly = c => `<ellipse cx="100" cy="158" rx="27" ry="26" fill="${c}" stroke="none"/>`;
+const head = f => `<circle cx="100" cy="90" r="46" fill="${f}"/>`;
+const hands = (f, a, ay, b, by) => `<circle cx="${a}" cy="${ay}" r="9" fill="${f}"/><circle cx="${b}" cy="${by}" r="9" fill="${f}"/>`;
+
+const DRAW = {
+  owl(u){ const f=`url(#b${u})`;
+    return [grad('b'+u,'#F1E7D6','#C3AF91','#A38D6C'),
+    `<ellipse cx="86" cy="191" rx="11" ry="6" fill="#E9A55E"/><ellipse cx="114" cy="191" rx="11" ry="6" fill="#E9A55E"/>
+     <path d="M60 72 L52 32 L84 56 Z" fill="${f}"/><path d="M140 72 L148 32 L116 56 Z" fill="${f}"/>
+     <ellipse cx="100" cy="124" rx="58" ry="66" fill="${f}"/>
+     <path d="M46 116 q-14 32 8 56 q10 -24 4 -52z" fill="${f}"/><path d="M154 116 q14 32 -8 56 q-10 -24 -4 -52z" fill="${f}"/>
+     <ellipse cx="100" cy="152" rx="34" ry="32" fill="#F6EDDF" stroke="none"/>
+     <circle cx="82" cy="100" r="15" fill="#FFFBF4"/><circle cx="118" cy="100" r="15" fill="#FFFBF4"/>
+     ${eyes(82,118,101)}
+     <circle cx="82" cy="100" r="18.5" fill="none" stroke="#3F3530" stroke-width="2.4"/><circle cx="118" cy="100" r="18.5" fill="none" stroke="#3F3530" stroke-width="2.4"/>
+     <path d="M97.5 98 q2.5 -3 5 0" fill="none" stroke="#3F3530"/>
+     <path d="M95 117 L105 117 L100 126 Z" fill="#E9A55E"/>
+     ${blush(64,136,124)}
+     <rect x="76" y="150" width="48" height="32" rx="3" fill="#3E8F86"/><path d="M100 150 v32"/>
+     <path d="M82 158 h12 M82 165 h10 M106 158 h12 M106 165 h10" stroke="#E7F2EF" stroke-width="1.6"/>
+     ${hands(f,73,166,127,166)}`]; },
+  bear(u){ const f=`url(#b${u})`;
+    return [grad('b'+u,'#F2D6B4','#C99A6C','#A77A4F'),
+    `${feet(f)}${body(f)}${belly('#F3DEC6')}
+     <circle cx="62" cy="56" r="17" fill="${f}"/><circle cx="138" cy="56" r="17" fill="${f}"/>
+     <circle cx="62" cy="56" r="8.5" fill="#F1C9A6" stroke="none"/><circle cx="138" cy="56" r="8.5" fill="#F1C9A6" stroke="none"/>
+     ${head(f)}
+     <ellipse cx="100" cy="108" rx="21" ry="15" fill="#F6E4CF"/>
+     <ellipse cx="100" cy="101" rx="6.5" ry="4.6" fill="#3B2E26" stroke="none"/>
+     <path d="M100 105 v4 M94 110 q6 4 12 0" fill="none"/>
+     ${eyes(80,120,88)}${blush(68,132,104)}
+     <rect x="74" y="146" width="52" height="12" rx="2" fill="#E3A84F"/><rect x="78" y="158" width="48" height="12" rx="2" fill="#7FAE8A"/><rect x="72" y="170" width="54" height="12" rx="2" fill="#D9796A"/>
+     ${hands(f,70,162,130,162)}`]; },
+  fox(u){ const f=`url(#b${u})`;
+    return [grad('b'+u,'#FAD3AA','#E79A5E','#C8763C'),
+    `<path d="M134 176 q48 -2 44 -54 q-2 -24 -18 -30 q10 32 -10 52 q-10 12 -22 16 z" fill="${f}"/>
+     <path d="M160 92 q16 6 18 28 q-8 -6 -16 -4 q2 -12 -2 -24z" fill="#FFF3E4"/>
+     ${feet(f)}${body(f)}${belly('#FFF3E4')}
+     <path d="M60 70 L58 28 L92 52 Z" fill="${f}"/><path d="M140 70 L142 28 L108 52 Z" fill="${f}"/>
+     <path d="M64 62 L63 38 L84 53 Z" fill="#FFF3E4" stroke="none"/><path d="M136 62 L137 38 L116 53 Z" fill="#FFF3E4" stroke="none"/>
+     ${head(f)}
+     <path d="M58 96 Q72 130 100 126 Q128 130 142 96 Q124 114 100 110 Q76 114 58 96Z" fill="#FFF3E4"/>
+     <ellipse cx="100" cy="108" rx="5.5" ry="4" fill="#3B2E26" stroke="none"/>
+     <path d="M95 114 q5 4 10 0" fill="none"/>
+     ${eyes(82,118,90)}${blush(68,132,104)}
+     <path d="M114 162 L98 180" stroke="#7B5A3A" stroke-width="7"/>
+     <circle cx="124" cy="150" r="16" fill="#E8F4F8" stroke-width="3"/><path d="M116 146 q4 -6 10 -6" fill="none" stroke="#fff" stroke-width="2"/>
+     ${hands(f,72,160,98,180)}`]; },
+  turtle(u){ const f=`url(#b${u})`, s=`url(#s${u})`;
+    return [grad('b'+u,'#DDEBC8','#A9C98A','#86A866')+grad('s'+u,'#DCC18D','#B39561','#917645'),
+    `${feet(f)}
+     <ellipse cx="100" cy="152" rx="48" ry="42" fill="${s}"/>
+     <path d="M56 140 l10 4 M144 140 l-10 4 M60 172 l10 -4 M140 172 l-10 -4" fill="none" stroke-width="1.8" opacity=".6"/>
+     <ellipse cx="100" cy="156" rx="31" ry="31" fill="#F1E6C8"/>
+     <path d="M72 148 h56 M71 163 h58 M78 177 h44" fill="none" stroke-width="1.5" opacity=".35"/>
+     <circle cx="100" cy="94" r="40" fill="${f}"/>
+     ${eyes(84,116,92)}${blush(72,128,106)}
+     <path d="M94 104 q6 5 12 0" fill="none"/>
+     <rect x="80" y="150" width="40" height="30" rx="2" fill="#E7D2A8"/><rect x="80" y="150" width="40" height="8" fill="#D4B98A"/>
+     <rect x="93" y="164" width="14" height="7" rx="1" fill="#FFF8EA" stroke-width="1.4"/>
+     ${hands(f,76,166,124,166)}`]; },
+  beaver(u){ const f=`url(#b${u})`;
+    return [grad('b'+u,'#DEB693','#AC7E58','#8C613F'),
+    `<ellipse cx="150" cy="178" rx="30" ry="14" transform="rotate(-25 150 178)" fill="#8A6446"/>
+     <path d="M134 176 l24 -12 M140 186 l24 -12 M146 166 l10 18 M158 160 l8 16" fill="none" stroke-width="1.3" opacity=".45"/>
+     ${feet(f)}${body(f)}${belly('#EFD9BF')}
+     <circle cx="66" cy="58" r="11" fill="${f}"/><circle cx="134" cy="58" r="11" fill="${f}"/>
+     <circle cx="66" cy="58" r="5" fill="#E9C29E" stroke="none"/><circle cx="134" cy="58" r="5" fill="#E9C29E" stroke="none"/>
+     ${head(f)}
+     <ellipse cx="100" cy="106" rx="19" ry="13" fill="#F2DEC6"/>
+     <ellipse cx="100" cy="99" rx="7" ry="4.6" fill="#3B2E26" stroke="none"/>
+     <rect x="95" y="110" width="10" height="9" rx="1.5" fill="#fff" stroke-width="1.6"/><path d="M100 110 v9" stroke-width="1.2"/>
+     ${eyes(82,118,88)}${blush(68,132,102)}
+     <rect x="74" y="148" width="52" height="36" rx="4" fill="#FFFDF7"/>
+     <rect x="82" y="166" width="9" height="12" fill="#A9C2E4" stroke-width="1.6"/><rect x="95" y="159" width="9" height="19" fill="#6F95CB" stroke-width="1.6"/><rect x="108" y="152" width="9" height="26" fill="#3F6AA8" stroke-width="1.6"/>
+     ${hands(f,72,170,128,170)}`]; },
+  rabbit(u){ const f=`url(#b${u})`;
+    return [grad('b'+u,'#FFFEFB','#F2E8DC','#DCCBB7'),
+    `<ellipse cx="80" cy="40" rx="13" ry="36" transform="rotate(-10 80 40)" fill="${f}"/><ellipse cx="120" cy="40" rx="13" ry="36" transform="rotate(10 120 40)" fill="${f}"/>
+     <ellipse cx="80" cy="42" rx="6" ry="25" transform="rotate(-10 80 42)" fill="#F7C6CF" stroke="none"/><ellipse cx="120" cy="42" rx="6" ry="25" transform="rotate(10 120 42)" fill="#F7C6CF" stroke="none"/>
+     ${feet(f)}${body(f)}${belly('#FFFFFF')}${head(f)}
+     <path d="M96 99 h8 l-4 4.5z" fill="#E98C9E" stroke-width="1.4"/>
+     <path d="M100 104 v3 M95 108 q5 3 5 -1 q0 4 5 1" fill="none"/>
+     ${eyes(82,118,90)}${blush(68,132,102)}
+     <path d="M100 152 q-14 -6 -28 -2 v30 q14 -4 28 2 z" fill="#FFF4CF"/><path d="M100 152 q14 -6 28 -2 v30 q-14 -4 -28 2 z" fill="#FDE1E8"/>
+     <circle cx="86" cy="164" r="5" fill="#F4C44E" stroke-width="1.4"/>
+     <path d="M114 172 l-5 -5 a3 3 0 0 1 5 -4 a3 3 0 0 1 5 4 z" fill="#E98C9E" stroke-width="1.2"/>
+     ${hands(f,69,168,131,168)}`]; },
+  squirrel(u){ const f=`url(#b${u})`;
+    return [grad('b'+u,'#F3CBA0','#D3925F','#B27343'),
+    `<path d="M70 186 q-50 -8 -46 -62 q4 -44 40 -50 q32 -4 32 22 q0 18 -20 18 q-14 0 -12 -12 q-24 16 -10 46 q6 14 16 20 z" fill="${f}"/>
+     <path d="M38 128 q2 -30 26 -42" fill="none" stroke="#F7DFC4" stroke-width="5"/>
+     ${feet(f)}${body(f)}${belly('#F8E6D0')}
+     <path d="M66 62 L63 34 L86 52Z" fill="${f}"/><path d="M134 62 L137 34 L114 52Z" fill="${f}"/>
+     <path d="M63 34 l-3 -7 M63 34 l3 -8 M137 34 l3 -7 M137 34 l-3 -8" fill="none" stroke-width="2"/>
+     ${head(f)}
+     <ellipse cx="100" cy="106" rx="16" ry="11" fill="#F8E6D0"/>
+     <ellipse cx="100" cy="101" rx="5" ry="3.6" fill="#3B2E26" stroke="none"/>
+     <path d="M95 108 q5 4 10 0" fill="none"/>
+     ${eyes(82,118,89)}${blush(68,132,103)}
+     <path d="M116 160 l18 10" fill="none" stroke-width="1.4"/>
+     <rect x="130" y="164" width="22" height="13" rx="2" transform="rotate(20 141 170)" fill="#FFF8E8" stroke-width="1.8"/>
+     <ellipse cx="100" cy="168" rx="14" ry="15" fill="#B98551"/>
+     <path d="M84 158 q16 -14 32 0 q-16 6 -32 0z" fill="#7A5636"/><path d="M100 147 v-6" fill="none"/>
+     ${hands(f,84,170,116,170)}`]; },
+  cat(u){ const f=`url(#b${u})`;
+    return [grad('b'+u,'#FFFAF2','#EEDFCB','#D6C1A5'),
+    `<path d="M138 178 q38 4 36 -32 q-2 -16 -12 -18 q6 16 -2 30 q-8 10 -22 10z" fill="#E7A86E"/>
+     ${feet(f)}${body(f)}${belly('#FFFDF8')}
+     <path d="M60 72 L62 32 L94 50Z" fill="#E7A86E"/><path d="M140 72 L138 32 L106 50Z" fill="${f}"/>
+     <path d="M67 63 L68 42 L86 52Z" fill="#F5C2C6" stroke="none"/><path d="M133 63 L132 42 L114 52Z" fill="#F5C2C6" stroke="none"/>
+     ${head(f)}
+     <path d="M64 68 q14 -22 38 -20 q-6 16 -22 24 q-12 6 -16 -4z" fill="#E7A86E" stroke="none" opacity=".9"/>
+     <path d="M96 99 h8 l-4 4.5z" fill="#E98C9E" stroke-width="1.4"/>
+     <path d="M100 104 q-4 5 -8 2 M100 104 q4 5 8 2" fill="none"/>
+     <path d="M70 101 h-16 M70 107 l-15 4 M130 101 h16 M130 107 l15 4" fill="none" stroke-width="1.5"/>
+     ${eyes(82,118,89)}${blush(72,128,99)}
+     <rect x="74" y="148" width="42" height="34" rx="3" fill="#B9A6DA"/>
+     <path d="M80 158 h28 M80 165 h24 M80 172 h18" stroke="#F6F1FF" stroke-width="1.6"/>
+     <path d="M120 178 L138 140" stroke="#4F3F78" stroke-width="7"/><path d="M120 178 l-2.5 7 l6 -3.5z" fill="#E9C46A" stroke-width="1.4"/>
+     ${hands(f,72,168,124,172)}`]; }
+};
+function animalSVG(key){
+  const u = ++UID; const [defs, inner] = DRAW[key](u);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 210" aria-hidden="true"><defs><filter id="w${u}" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="${u%9+3}"/><feDisplacementMap in="SourceGraphic" scale="2.6"/></filter>${defs}</defs><ellipse cx="100" cy="199" rx="56" ry="7" fill="${S}" opacity=".12"/><g filter="url(#w${u})" stroke="${S}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">${inner}</g></svg>`;
+}
+
+/* ---------- 유형 데이터 ---------- */
+const TYPES = {
+  teacher:{ name:"학교도서관 사서교사", animal:"부엉이", draw:"owl", bg:"#DDEFEA", line:"#A9D3C9", ink:"#0B554F",
+    tag:"책과 정보로 아이들을 가르치는 선생님", keys:["수업하는 사서","독서교육","학교도서관"],
+    desc:"학교도서관을 책임지면서 학생들에게 정보를 찾고 활용하는 법을 가르쳐요. 사서이자 교사, 그리고 도서관 관리자 역할을 함께 해요.",
+    tasks:["다른 과목 선생님과 협력해 정보활용 수업을 해요","학생 눈높이에 맞는 장서를 고르고 관리해요","독서 행사와 도서부 활동을 이끌어요"],
+    day:[["08:30","아침 독서 시간 준비"],["10:00","국어 시간과 함께하는 정보활용 수업"],["12:30","점심시간 도서관 운영, 도서부 학생들과 대출"],["15:00","신착 도서 선정과 주문"],["16:30","독서 주간 행사 기획"]],
+    track:"정보서비스", trackDesc:"이용자에게 필요한 정보를 전달하는 방법",
+    courses:[["1학년","이용자교육론"],["2학년","독서지도","정보서비스론"],["3학년","학교도서관운영"],["4학년","도서관실무실습"]],
+    clubs:["생각하는 돈키호테 (토론)","다빈 (도서관 봉사)"], certs:["정사서 2급","사서교사 (교직과정 이수)"],
+    good:"kids", opp:"data" },
+  public:{ name:"공공도서관 사서", animal:"곰", draw:"bear", bg:"#F6E6CB", line:"#E2C58F", ink:"#7A4E19",
+    tag:"동네 사람 누구나 반겨 주는 도서관의 얼굴", keys:["동네도서관","문화프로그램","모두의서재"],
+    desc:"어린이부터 어르신까지 지역 주민 모두가 이용하는 도서관을 운영해요. 책을 빌려주는 일을 넘어 강좌와 행사로 동네의 문화를 만들어요.",
+    tasks:["이용자의 질문에 맞는 자료를 찾아 안내해요","인문학 강좌, 북콘서트 같은 프로그램을 기획해요","도서관에 오기 어려운 분들을 찾아가는 서비스를 해요"],
+    day:[["09:00","개관 준비와 반납 도서 정리"],["10:30","이용자 자료 찾기 상담"],["13:00","성인 인문학 강좌 진행"],["15:00","요양원으로 찾아가는 도서관"],["17:00","다음 달 행사 홍보물 만들기"]],
+    track:"도서관경영", trackDesc:"도서관과 정보센터를 운영하는 방법",
+    courses:[["1학년","장서관리론"],["2학년","공공도서관경영"],["3학년","도서관프로그램운영","취약계층서비스"],["4학년","도서관정보정책"]],
+    clubs:["다빈 (도서관 봉사)","L.S.G (취업 스터디)"], certs:["정사서 2급","사서직 공무원 시험 준비"],
+    good:"curation", opp:"archivist" },
+  academic:{ name:"대학·전문도서관 사서", animal:"여우", draw:"fox", bg:"#FBE1D2", line:"#EDB698", ink:"#9A4320",
+    tag:"연구자 옆에서 필요한 자료를 척척 찾아 주는 조력자", keys:["연구지원","학술정보","검색의 달인"],
+    desc:"대학, 연구소, 기업의 도서관에서 연구에 필요한 학술 자료를 찾고 제공해요. 데이터베이스와 전자저널을 능숙하게 다루는 검색 전문가예요.",
+    tasks:["논문을 쓰는 연구자에게 필요한 자료를 찾아 줘요","학술 데이터베이스와 전자저널 구독을 관리해요","도서관 이용법과 검색법을 교육해요"],
+    day:[["09:00","학술 데이터베이스 접속 점검"],["10:30","대학원생 논문 자료 상담"],["13:00","신입생 도서관 이용 교육"],["15:00","전자저널 구독 검토 회의"],["17:00","연구 성과 분석 보고서 작성"]],
+    track:"정보서비스", trackDesc:"이용자에게 필요한 정보를 전달하는 방법",
+    courses:[["1학년","문헌정보학이해"],["2학년","정보서비스론"],["3학년","정보검색이해","대학도서관경영"],["4학년","계량정보학"]],
+    clubs:["L.S.G (취업 스터디)","생각하는 돈키호테 (토론)"], certs:["정사서 2급"],
+    good:"data", opp:"editor" },
+  archivist:{ name:"기록연구사", animal:"거북이", draw:"turtle", bg:"#E5ECD3", line:"#BFCF9C", ink:"#4D6A27",
+    tag:"오늘의 기록을 먼 미래까지 지키는 수호자", keys:["기록보존","시간을 지키는 일","꼼꼼함"],
+    desc:"공공기관과 기업이 만든 기록 가운데 남길 가치가 있는 것을 골라 오래 보존해요. 오늘의 문서가 미래의 역사가 되도록 지키는 일이에요.",
+    tasks:["기록물의 보존 가치를 평가하고 분류해요","오래된 문서를 디지털로 옮겨 안전하게 보관해요","기록을 찾는 사람에게 열람을 도와줘요"],
+    day:[["09:00","새로 넘어온 기록물 목록 확인"],["10:30","보존 가치 평가 회의"],["13:00","오래된 문서 디지털화 점검"],["15:00","기록물 열람 요청 처리"],["16:30","보존 서고 온도와 습도 점검"]],
+    track:"장서개발", trackDesc:"필요한 자료를 골라 모으고 관리하는 방법",
+    courses:[["1학년","도서관문화사"],["2학년","목록법이해"],["3학년","메타데이터"],["4학년","기록학개론"]],
+    clubs:["L.S.G (취업 스터디)","생각하는 돈키호테 (토론)"], certs:["정사서 2급","기록물관리전문요원 (대학원 등 추가 과정 필요)"],
+    good:"curation", opp:"public" },
+  data:{ name:"데이터·정보관리 전문가", animal:"비버", draw:"beaver", bg:"#DCE6F4", line:"#A9BEDF", ink:"#2D5A90",
+    tag:"흩어진 정보를 차곡차곡 쌓아 길을 만드는 설계자", keys:["데이터","시스템 설계","분석"],
+    desc:"정보가 쌓이는 데이터베이스를 설계하고, 사람들이 원하는 정보를 빠르게 찾도록 시스템을 만들어요. 이용 데이터를 분석해 서비스를 개선하기도 해요.",
+    tasks:["데이터베이스를 설계하고 품질을 관리해요","검색 시스템이 더 잘 찾도록 개선해요","이용 통계를 분석해 보고서를 만들어요"],
+    day:[["09:30","데이터 품질 점검"],["11:00","검색 시스템 개선 회의"],["13:30","이용 통계 분석"],["15:30","새 데이터베이스 구조 설계"],["17:00","현황 대시보드 업데이트"]],
+    track:"정보학", trackDesc:"AI를 활용한 데이터 분석 방법",
+    courses:[["1학년","디지털시민사회이야기"],["2학년","데이터베이스이해","정보학개론"],["3학년","정보이용형태"],["4학년","정보시스템개발","계량정보학"]],
+    clubs:["셈사랑 (컴퓨터)"], certs:["컴퓨터활용능력","SQLD","ADP","정보처리기사"],
+    good:"academic", opp:"kids" },
+  kids:{ name:"어린이·청소년 독서 전문가", animal:"토끼", draw:"rabbit", bg:"#FAE1E6", line:"#EDB3BF", ink:"#9E3F58",
+    tag:"그림책을 펼쳐 첫 독서의 즐거움을 여는 친구", keys:["그림책","동화 구연","청소년 독서"],
+    desc:"어린이와 청소년이 책과 친해지도록 돕는 일을 해요. 나이에 맞는 책을 골라 주고, 함께 읽고 이야기하는 프로그램을 만들어요.",
+    tasks:["연령별 추천 도서 목록을 만들어요","동화 구연과 독서 놀이 프로그램을 진행해요","청소년 독서동아리를 이끌어요"],
+    day:[["09:30","어린이자료실 그림책 전시 교체"],["11:00","유아 동화 구연 시간"],["14:00","청소년 독서동아리 모임"],["16:00","방과후 독서 프로그램"],["17:30","연령별 추천 도서 목록 정리"]],
+    track:"독서지도", trackDesc:"전자출판과 독서지도 방법",
+    courses:[["1학년","이용자교육론"],["2학년","어린이서비스","독서지도"],["3학년","도서관프로그램운영"],["4학년","도서관실무실습"]],
+    clubs:["다빈 (도서관 봉사)"], certs:["정사서 2급","독서지도사"],
+    good:"teacher", opp:"archivist" },
+  curation:{ name:"정보 큐레이션 전문가", animal:"다람쥐", draw:"squirrel", bg:"#F0E4D2", line:"#D9BE98", ink:"#7A5333",
+    tag:"좋은 정보만 골라 모아 보기 좋게 엮는 수집가", keys:["골라 담기","주제 전시","추천 목록"],
+    desc:"넘쳐나는 정보 가운데 꼭 필요한 것을 골라 주제별로 엮어 보여 줘요. 분류와 메타데이터로 정보에 이름표를 붙이고, 전시와 추천 목록으로 소개해요.",
+    tasks:["자료를 분류하고 주제별로 태그를 달아요","이달의 주제 전시와 추천 목록을 기획해요","온라인 큐레이션 콘텐츠를 만들어요"],
+    day:[["09:00","새로 들어온 자료 훑어보기"],["10:30","주제별 분류와 태그 달기"],["13:00","이달의 주제 전시 기획"],["15:00","추천 도서 목록 큐레이션"],["17:00","온라인 큐레이션 게시"]],
+    track:"정보조직", trackDesc:"정보를 분류하고 정리하는 기준",
+    courses:[["1학년","장서관리론"],["2학년","자료분류론","목록법이해"],["3학년","지식정보큐레이션","메타데이터"],["4학년","도서관마케팅"]],
+    clubs:["리더 (웹콘텐츠 토론)","생각하는 돈키호테 (토론)"], certs:["정사서 2급"],
+    good:"editor", opp:"data" },
+  editor:{ name:"출판·콘텐츠 기획자", animal:"고양이", draw:"cat", bg:"#E8E1F3", line:"#C4B6E0", ink:"#5B4290",
+    tag:"책과 콘텐츠를 세상에 내놓는 기획자", keys:["책 기획","콘텐츠","전자출판"],
+    desc:"어떤 책과 콘텐츠가 사람들에게 필요한지 읽어 내고, 기획부터 제작과 홍보까지 이끌어요. 종이책뿐 아니라 전자책과 SNS 콘텐츠도 다뤄요.",
+    tasks:["독자가 원하는 주제를 찾아 책을 기획해요","원고와 디자인을 검토하고 제작을 관리해요","SNS 콘텐츠로 책을 알려요"],
+    day:[["10:00","새 책 기획 회의"],["11:30","원고 검토"],["14:00","표지 디자인 시안 확인"],["16:00","SNS 홍보 콘텐츠 제작"],["17:30","독자 반응 분석"]],
+    track:"독서지도", trackDesc:"전자출판과 독서지도 방법",
+    courses:[["1학년","디지털시민사회이야기"],["2학년","독서지도"],["3학년","지식정보큐레이션"],["4학년","전자출판론","도서관마케팅"]],
+    clubs:["리더 (웹콘텐츠 토론)"], certs:["독서지도사","정사서 2급"],
+    good:"curation", opp:"academic" }
+};
+const ORDER = ["teacher","public","academic","archivist","data","kids","curation","editor"];
+
+/* 각 선택지: [문장, 주 유형(+2), 보조 유형(+1)] */
+const QUESTIONS = [
+  ["궁금한 게 생기면 나는?", [["끝까지 검색해서 출처까지 확인한다","academic","data"],["주변 사람에게 물어보고 같이 이야기한다","public","teacher"],["찾은 내용을 노트에 깔끔하게 정리해 둔다","curation","archivist"],["알게 된 걸 짧은 글이나 영상으로 만들어 본다","editor","kids"]]],
+  ["조별과제에서 내가 주로 맡는 역할은?", [["자료 조사 담당","academic","curation"],["PPT 만들고 발표하기 담당","teacher","editor"],["표와 엑셀 정리 담당","data","archivist"],["모두를 챙기는 분위기 메이커","kids","public"]]],
+  ["주말에 가장 끌리는 활동은?", [["친구들과 맛집이나 카페 가기","public","editor"],["전시회나 박물관 구경 가기","archivist","academic"],["넷플릭스나 유튜브 몰아보기","editor","curation"],["가족이나 동생과 시간 보내기","kids","teacher"]]],
+  ["내 책장을 정리한다면?", [["주제별 분류 기준부터 세운다","data","curation"],["친구들이 빌려 가기 쉽게 꺼내 둔다","public","kids"],["언제, 누구에게 받은 책인지 적어 둔다","archivist","data"],["색이나 크기, 모양 순으로 꽂는다","curation","editor"]]],
+  ["동생이 정보를 찾는 방법을 물어보면?", [["검색어 고르는 법부터 차근차근 알려 준다","teacher","academic"],["나이에 맞는 쉬운 책과 사이트를 골라 준다","kids","teacher"],["같이 찾으면서 믿을 만한 출처를 가려 준다","academic","archivist"],["찾는 순서를 그림으로 정리해 준다","data","teacher"]]],
+  ["숫자가 가득한 표를 보면 드는 생각은?", [["숨은 패턴을 찾고 싶다","data","academic"],["한눈에 보이게 다듬고 싶다","curation","editor"],["빠진 칸이 없는지 확인하고 싶다","archivist","data"],["사람들에게 쉽게 설명해 주고 싶다","teacher","public"]]],
+  ["오래된 사진과 일기를 발견했다!", [["날짜순으로 정리해 앨범을 만든다","archivist","curation"],["가족과 함께 보며 이야기를 나눈다","public","kids"],["그 시절 이야기를 글로 써 본다","editor","archivist"],["스캔해서 파일 이름을 붙여 저장한다","data","archivist"]]],
+  ["학교 축제 부스를 운영한다면?", [["취향 맞춤 책 추천 부스","curation","teacher"],["어린이 동화 구연 부스","kids","public"],["우리 학교 옛날 사진 전시","archivist","public"],["직접 만든 잡지 판매 부스","editor","curation"]]],
+  ["좋아하는 책을 친구에게 알려 주는 방법은?", [["친구 취향에 맞는 책 세 권을 골라 준다","curation","academic"],["같이 읽고 이야기하는 모임을 연다","teacher","public"],["SNS나 블로그에 독후감상문을 올린다","editor","curation"],["비슷한 책 목록을 쭉 만들어 준다","academic","data"]]],
+  ["10년 뒤 일하고 싶은 공간은?", [["학생들 목소리가 들리는 학교","teacher","kids"],["동네 사람들이 오가는 도서관","public","kids"],["연구실과 열람실이 있는 캠퍼스","academic","data"],["그림책이 가득한 따뜻한 방","kids","editor"]]]
+];
+
+
+/* ---------- 상태 ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const state = { i:0, answers:[], mine:null, counts:null, total:0 };
+try { state.mine = localStorage.getItem("lis-mine"); } catch(e) {}
+
+function show(view){
+  ["start","quiz","result","types","dept"].forEach(v => $("v-"+v).hidden = v !== view);
+  const map = {types:"nav-types",dept:"nav-dept"};
+  document.querySelectorAll(".nav button").forEach(b => b.removeAttribute("aria-current"));
+  if (map[view]) $(map[view]).setAttribute("aria-current","page");
+  window.scrollTo(0,0);
+}
+function go(hash){ if (location.hash.slice(1) === hash) route(); else location.hash = hash; }
+function route(){
+  const h = location.hash.slice(1);
+  if (h === "types") return show("types");
+  if (h === "dept") return show("dept");
+  if (h === "quiz") { if (!state.answers.length) state.i = 0; renderQ(); return show("quiz"); }
+  if (h.startsWith("r-") && TYPES[h.slice(2)]) { renderResult(h.slice(2)); return show("result"); }
+  show("start");
+}
+
+/* ---------- 시작 화면 ---------- */
+function renderStart(){
+  let html = "";
+  ORDER.forEach((k,i) => {
+    html += `<div class="cell" title="${TYPES[k].name}">${animalSVG(TYPES[k].draw)}</div>`;
+    if (i === 3 || i === 7) html += `<div class="plank"></div>`;
+  });
+  $("shelf").innerHTML = html;
+}
+
+/* ---------- 퀴즈 ---------- */
+function startQuiz(){ state.i = 0; state.answers = []; go("quiz"); }
+function renderQ(){
+  const [q, opts] = QUESTIONS[state.i];
+  $("qnum").textContent = `${state.i+1} / ${QUESTIONS.length}`;
+  $("pfill").style.width = `${(state.i+1)/QUESTIONS.length*100}%`;
+  $("pbar").setAttribute("aria-valuenow", state.i+1);
+  $("qtext").textContent = q;
+  const sel = state.answers[state.i];
+  $("opts").innerHTML = opts.map((o,j) => `<button type="button" class="opt${sel===j?" sel":""}" data-j="${j}"><span class="k">${"ABCDE"[j]}</span><span>${esc(o[0])}</span></button>`).join("");
+  $("prev-btn").disabled = state.i === 0;
+  const box = $("qbox"); box.classList.remove("enter"); void box.offsetWidth; box.classList.add("enter");
+}
+$("opts").addEventListener("click", e => {
+  const b = e.target.closest(".opt"); if (!b) return;
+  state.answers[state.i] = +b.dataset.j;
+  document.querySelectorAll(".opt").forEach(x => x.classList.toggle("sel", x === b));
+  setTimeout(() => {
+    if (state.i < QUESTIONS.length - 1) { state.i++; renderQ(); }
+    else finish();
+  }, 220);
+});
+$("prev-btn").onclick = () => { if (state.i > 0) { state.i--; renderQ(); } };
+$("quit-btn").onclick = () => go("");
+
+function finish(){
+  const score = Object.fromEntries(ORDER.map(k => [k,0]));
+  state.answers.forEach((j,qi) => { const o = QUESTIONS[qi][1][j]; score[o[1]] += 2; score[o[2]] += 1; });
+  const best = Math.max(...Object.values(score));
+  const tied = ORDER.filter(k => score[k] === best);
+  let pick = tied[0];
+  for (let qi = state.answers.length - 1; qi >= 0; qi--) {
+    const p = QUESTIONS[qi][1][state.answers[qi]][1];
+    if (tied.includes(p)) { pick = p; break; }
+  }
+  state.mine = pick; state.answers = [];
+  try { localStorage.setItem("lis-mine", pick); } catch(e) {}
+  saveResult(pick);
+  go("r-" + pick);
+}
+
+/* ---------- 결과 ---------- */
+function miniCard(k, label){
+  const t = TYPES[k];
+  return `<button type="button" class="mini" data-type="${k}">${animalSVG(t.draw)}<span class="lbl">${label}</span><span class="nm">${t.name}</span><span class="lbl">${t.animal}</span></button>`;
+}
+function renderResult(k){
+  const t = TYPES[k]; const mine = state.mine === k;
+  const el = $("v-result");
+  el.style.setProperty("--tbg", t.bg); el.style.setProperty("--tline", t.line); el.style.setProperty("--tink", t.ink);
+  const courses = t.courses.map(([y,...cs]) => `<div class="prep-row"><span class="lbl">${y}</span><div class="pills">${cs.map(c=>`<span class="pill">${c}</span>`).join("")}</div></div>`).join("");
+  el.innerHTML = `
+    <div class="rcard enter">
+      ${animalSVG(t.draw)}
+      <p class="pre">${mine ? "나에게 어울리는 직업은" : "직업 살펴보기"}</p>
+      <h1 class="name">${t.name}</h1>
+      <p class="animal">${t.animal} 친구</p>
+      <p class="tag">${t.tag}</p>
+      <div class="chips">${t.keys.map(x=>`<span class="chip">#${x.replace(/\s/g,"")}</span>`).join("")}</div>
+    </div>
+    <div class="ractions">
+      <button class="btn small" type="button" id="save-img">결과 이미지 만들기</button>
+      <button class="btn small ghost" type="button" data-start>${mine ? "다시 하기" : "테스트 하기"}</button>
+      <button class="btn small ghost" type="button" data-go="types">다른 직업 보기</button>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><p class="eyebrow">이런 일을 해요</p><h2>${t.name}는 어떤 일을 할까?</h2></div>
+      <p>${t.desc}</p>
+      <ul class="tasks panel">${t.tasks.map(x=>`<li>${x}</li>`).join("")}</ul>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><p class="eyebrow">이 직업의 하루</p><h2>${t.animal} 친구의 하루 엿보기</h2></div>
+      <ol class="day panel">${t.day.map(([tm,x])=>`<li><time>${tm}</time><span>${x}</span></li>`).join("")}</ol>
+      <p class="note">일하는 곳에 따라 하루 일과는 달라질 수 있어요.</p>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><p class="eyebrow">대구대 문헌정보학과에서 이렇게 준비해요</p><h2>나에게 맞는 공부 길</h2></div>
+      <div class="track-badge"><div><span>추천 트랙</span><br><b>${t.track}</b></div><span style="margin-left:auto;text-align:right;max-width:55%">${t.trackDesc}</span></div>
+      <div class="panel prep">
+        ${courses}
+        <div class="prep-row"><span class="lbl">동아리</span><div class="pills">${t.clubs.map(c=>`<span class="pill lime">${c}</span>`).join("")}</div></div>
+        <div class="prep-row"><span class="lbl">자격증</span><div class="pills">${t.certs.map(c=>`<span class="pill lime">${c}</span>`).join("")}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><p class="eyebrow">함께 보면 좋은 직업</p><h2>궁합 살펴보기</h2></div>
+      <div class="pair">${miniCard(t.good,"함께하면 든든한 친구")}${miniCard(t.opp,"나와 정반대인 친구")}</div>
+    </div>
+
+    <div class="sec" id="stat-sec" hidden>
+      <div class="sec-head"><p class="eyebrow">참여자 통계</p><h2>다른 사람들은 어떤 직업이 나왔을까?</h2></div>
+      <div class="panel stats" id="stats"></div>
+      <p class="note" id="stat-note"></p>
+    </div>
+
+    <div class="cta">
+      <h3>대구대학교 문헌정보학과가 더 궁금하다면</h3>
+      <p>교육과정, 공부하는 공간, 학과생활, 졸업 후 진로까지 한곳에 모았어요.</p>
+      <button class="btn small" type="button" data-go="dept">학과 소개 보기</button>
+    </div>`;
+  $("save-img").onclick = () => makeImage(k);
+  renderStats();
+}
+
+/* ---------- 도감 & 학과 ---------- */
+function renderDex(){
+  $("dex").innerHTML = ORDER.map(k => { const t = TYPES[k];
+    return `<button type="button" class="dcard" data-type="${k}" style="--tbg:${t.bg};--tline:${t.line};--tink:${t.ink}">${animalSVG(t.draw)}<span class="nm">${t.name}</span><span class="an">${t.animal}</span></button>`; }).join("");
+}
+const JOURNEY = [
+  { start:true, t:"출발 준비", q:"정보는 왜 정리해야 할까?", d:"1학년에는 문헌정보학이 무엇을 하는 학문인지, 정보 사회에서 우리가 어떤 시민이어야 하는지 큰 그림부터 그려요.", courses:["문헌정보학이해","디지털시민사회이야기"] },
+  { t:"들여오기", q:"어떤 책을 도서관에 들일까?", d:"이용자에게 꼭 필요한 자료가 무엇인지 살피고, 정해진 예산으로 무엇을 사고 무엇을 정리할지 정해요. 도서관이라는 집을 꾸리는 법도 함께 배워요.", track:"장서개발 · 도서관경영", courses:["장서관리론","도서관문화사","공공도서관경영","도서관정보정책"], who:["public"] },
+  { t:"이름표 붙이기", q:"이 책은 어느 서가에 꽂혀야 할까?", d:"주제에 따라 분류 번호를 매기고 제목, 저자, 주제를 기록해요. 그래야 수십만 권 속에서도 한 권을 바로 찾을 수 있어요.", track:"정보조직", courses:["자료분류론","목록법이해","자동화목록법","메타데이터","자료분류특강"], who:["curation"] },
+  { t:"길 만들기", q:"검색창에 치면 어떻게 바로 나올까?", d:"책과 정보를 데이터베이스에 담고, 원하는 것을 빨리 찾을 수 있게 검색 시스템을 설계해요. 이용 데이터를 분석해 더 나은 길을 찾기도 해요.", track:"정보학", courses:["정보학개론","데이터베이스이해","정보시스템개발","계량정보학"], who:["data"] },
+  { t:"찾아 주기", q:"이 정보가 필요한 사람은 누구일까?", d:"이용자의 질문을 듣고 딱 맞는 자료를 찾아 연결해요. 사람들이 정보를 어떻게 찾고 쓰는지도 연구해요.", track:"정보서비스", courses:["정보서비스론","정보검색이해","정보이용형태","대학도서관경영"], who:["academic"] },
+  { t:"함께 읽기", q:"책을 처음 만나는 아이에게 어떻게 건넬까?", d:"어린이부터 어르신, 도서관에 오기 어려운 분들까지 책과 친해지도록 프로그램을 만들고 정보를 쓰는 법을 가르쳐요.", track:"독서지도 · 정보서비스", courses:["이용자교육론","독서지도","어린이서비스","학교도서관운영","도서관프로그램운영","취약계층서비스"], who:["teacher","kids"] },
+  { t:"세상에 알리기", q:"좋은 책을 어떻게 더 많은 사람에게 알릴까?", d:"주제에 맞게 자료를 골라 엮고, 전자책과 SNS 콘텐츠로 만들어 알려요. 직접 책을 기획해 출간해 보기도 해요.", track:"독서지도 · 도서관경영", courses:["지식정보큐레이션","전자출판론","도서관마케팅"], who:["editor"] },
+  { t:"오래 지키기", q:"오늘의 기록을 백 년 뒤에도 볼 수 있을까?", d:"남길 가치가 있는 기록을 골라 안전하게 보존하고, 필요한 사람이 언제든 볼 수 있도록 관리해요.", courses:["기록학개론"], who:["archivist"] }
+];
+const PLACES = [
+  ["국립중앙도서관","국가대표 도서관","우리나라 모든 출판물을 모으고 지키는 국가도서관에서 실습해요."],
+  ["국회도서관","의회도서관","국회의 입법 활동을 돕는 도서관에서 정보 서비스를 경험해요."],
+  ["대구대학교 학술정보원","대학도서관","우리 학교 도서관에서 대학도서관 업무를 직접 해 봐요."],
+  ["전문도서관","전문 분야 도서관","기업, 연구소, 기관에 있는 특정 분야 전문도서관에서 실습해요."],
+  ["학교도서관","학교 현장","초·중·고 학교도서관에서 사서교사의 일을 가까이에서 배워요."],
+  ["한국전력기술","하반기 국내현장실습","공기업 현장에서 기업의 정보와 기록을 다루는 일을 경험해요."]
+];
+const PRACTICE = [
+  ["컴퓨터 실습 수업","전 학년","한 사람에 한 대씩 컴퓨터가 있는 강의실에서 데이터베이스, 정보검색, 정보이용행태 분석을 직접 해요."],
+  ["도서관 견학 · 탐방","매 학기","여러 도서관을 찾아가 수업에서 배운 일이 현장에서 어떻게 쓰이는지 봐요."],
+  ["책 기획과 출간","프로젝트","팀을 꾸려 책을 기획하고 실제로 출간까지 해 봐요."],
+  ["서비스 아이디어 제안","프로젝트","배운 내용으로 도서관·정보 서비스를 제안하고, 실제로 구현되기도 해요."],
+  ["전문가 특강 · 모의면접","1·2학기","현장 전문가의 이야기를 듣고, 취업을 위한 면접 연습도 해요."]
+];
+const CLUBS = [["다빈","도서관 봉사"],["생각하는 돈키호테","토론"],["L.S.G","취업 스터디"],["셈사랑","컴퓨터"],["리더","웹콘텐츠 토론"]];
+const GUIDES = [
+  ["박광헌","교수 · 학과장","seokjung@daegu.ac.kr",["학교도서관","독서지도"],"penguin","#DCE6F4"],
+  ["김신영","교수","sinyoung@daegu.ac.kr",["정보서비스","도서관경영"],"alpaca","#FAE6EC"],
+  ["최예진","교수","brightyejin@daegu.ac.kr",["자료조직","학술커뮤니케이션"],"deer","#FAE1E6"],
+  ["장보성","교수","bsj@daegu.ac.kr",["정보학","정보시스템개발","정보검색","데이터베이스","정보이용행태분석"],"shiba","#F6E6CB"],
+  ["윤희윤","명예교수","yhy@daegu.ac.kr",["도서관경영론","도서관건축론","도서관정책","자료분류"],"sheep","#E5ECD3"],
+  ["곽병일","겸임교수","",["정보이용형태론","이용자서비스"],"otter","#E8E1F3"]
+];
+const BS = '#6B5444';
+const bEyes = (y=58) => `<g stroke="none"><ellipse cx="50" cy="${y}" rx="3.4" ry="4.2" fill="#3B2E26"/><ellipse cx="70" cy="${y}" rx="3.4" ry="4.2" fill="#3B2E26"/><circle cx="51.2" cy="${y-1.6}" r="1.2" fill="#fff"/><circle cx="71.2" cy="${y-1.6}" r="1.2" fill="#fff"/></g>`;
+const bBlush = (y=66) => `<g stroke="none" fill="#F09A9A" opacity=".45"><ellipse cx="42" cy="${y}" rx="6" ry="3.6"/><ellipse cx="78" cy="${y}" rx="6" ry="3.6"/></g>`;
+const suit = (jacket, tie, shirt="#FFFFFF") => `<path d="M14 122 q2 -30 46 -32 q44 2 46 32z" fill="${jacket}"/><path d="M48 91 l12 18 l12 -18 q-12 -3 -24 0z" fill="${shirt}"/>${tie ? `<path d="M57 95 h6 l2 4 l-3 16 h-4 l-3 -16z" fill="${tie}" stroke-width="1.4"/>` : ""}`;
+const BUST = {
+  penguin: () => `${suit("#2F3A52","#6C8FD0")}<ellipse cx="60" cy="56" rx="31" ry="30" fill="#3E4A5C"/><path d="M60 40 q22 0 22 20 q0 18 -22 20 q-22 -2 -22 -20 q0 -20 22 -20z" fill="#FBF8F2"/>${bEyes(57)}<path d="M55 64 l10 0 l-5 6z" fill="#E9A55E" stroke-width="1.6"/>${bBlush(67)}`,
+  panda: () => `${suit("#2E2A2A","","#2E2A2A")}<circle cx="35" cy="32" r="10" fill="#3A3434"/><circle cx="85" cy="32" r="10" fill="#3A3434"/><circle cx="60" cy="56" r="30" fill="#FBF9F4"/><path d="M31 54 q-2 -26 29 -26 q31 0 29 26 q-8 -14 -29 -14 q-21 0 -29 14z" fill="#3A3434"/><ellipse cx="49" cy="59" rx="7" ry="8.5" fill="#3A3434" stroke="none" transform="rotate(-15 49 59)"/><ellipse cx="71" cy="59" rx="7" ry="8.5" fill="#3A3434" stroke="none" transform="rotate(15 71 59)"/><g stroke="none"><circle cx="50" cy="59" r="2.6" fill="#fff"/><circle cx="70" cy="59" r="2.6" fill="#fff"/></g><ellipse cx="60" cy="68" rx="3.6" ry="2.6" fill="#3A3434" stroke="none"/><path d="M56 72 q4 3 8 0" fill="none"/>${bBlush(70)}`,
+  alpaca: () => `${suit("#2E2A2A","","#2E2A2A")}<ellipse cx="34" cy="34" rx="6" ry="12" transform="rotate(-20 34 34)" fill="#F6EBDD"/><ellipse cx="86" cy="34" rx="6" ry="12" transform="rotate(20 86 34)" fill="#F6EBDD"/><ellipse cx="34" cy="35" rx="2.6" ry="7" transform="rotate(-20 34 35)" fill="#F4C6CF" stroke="none"/><ellipse cx="86" cy="35" rx="2.6" ry="7" transform="rotate(20 86 35)" fill="#F4C6CF" stroke="none"/><ellipse cx="60" cy="60" rx="27" ry="29" fill="#F6EBDD"/><path d="M36 48 q2 -20 24 -20 q22 0 24 20 q-6 -6 -12 -5 q-4 -5 -12 -4 q-8 -1 -12 4 q-6 -1 -12 5z" fill="#4A3A36"/><g fill="#4A3A36" stroke="none"><circle cx="47" cy="31" r="6"/><circle cx="60" cy="27" r="7"/><circle cx="73" cy="31" r="6"/></g><g fill="#F7B6C4" stroke="#6B5444" stroke-width="1.4"><circle cx="78" cy="38" r="4"/><circle cx="84" cy="42" r="3"/></g><ellipse cx="60" cy="72" rx="12" ry="9" fill="#FFF8EF"/>${bEyes(60)}<path d="M57 70 q3 2 6 0 M60 72 v2 M56 76 q4 2 8 0" fill="none"/>${bBlush(68)}`,
+  deer: () => `<path d="M30 50 q-6 40 2 66 l14 0 q-8 -30 -4 -60z M90 50 q6 40 -2 66 l-14 0 q8 -30 4 -60z" fill="#3A2C26"/>${suit("#2E2A2A","","#2E2A2A")}<ellipse cx="27" cy="44" rx="13" ry="7" transform="rotate(-25 27 44)" fill="#D9A877"/><ellipse cx="93" cy="44" rx="13" ry="7" transform="rotate(25 93 44)" fill="#D9A877"/><circle cx="60" cy="56" r="29" fill="#D9A877"/><path d="M32 52 q2 -26 28 -26 q26 0 28 26 q-6 -10 -16 -14 q-8 8 -24 6 q-10 2 -16 8z" fill="#3A2C26"/><ellipse cx="60" cy="68" rx="13" ry="10" fill="#F6E4CF"/><g stroke="none" fill="#FFF4E4" opacity=".9"><circle cx="40" cy="64" r="2"/><circle cx="80" cy="64" r="2"/><circle cx="44" cy="70" r="1.6"/></g>${bEyes(56)}<ellipse cx="60" cy="64" rx="3.4" ry="2.4" fill="#3B2E26" stroke="none"/><path d="M56 69 q4 3 8 0" fill="none"/>${bBlush(64)}`,
+  shiba: () => `${suit("#2F2F38","#8C8C96")}<path d="M34 42 L32 18 L52 32Z" fill="#E3A464"/><path d="M86 42 L88 18 L68 32Z" fill="#E3A464"/><path d="M37 37 L36 25 L47 32Z" fill="#FBEBD6" stroke="none"/><path d="M83 37 L84 25 L73 32Z" fill="#FBEBD6" stroke="none"/><circle cx="60" cy="56" r="30" fill="#E3A464"/><path d="M34 62 q4 22 26 22 q22 0 26 -22 q-8 -6 -14 -2 q-4 -6 -12 -6 q-8 0 -12 6 q-6 -4 -14 2z" fill="#FBEBD6"/><g stroke="none" fill="#FBEBD6"><ellipse cx="48" cy="48" rx="4" ry="2.4"/><ellipse cx="72" cy="48" rx="4" ry="2.4"/></g>${bEyes(56)}<ellipse cx="60" cy="66" rx="4" ry="3" fill="#3B2E26" stroke="none"/><path d="M60 69 v2 M55 73 q5 3 10 0" fill="none"/>${bBlush(68)}`,
+  sheep: () => `${suit("#30333C","#8C8C96")}<g fill="#ECEAE6"><circle cx="38" cy="36" r="11"/><circle cx="52" cy="28" r="12"/><circle cx="68" cy="28" r="12"/><circle cx="82" cy="36" r="11"/><circle cx="30" cy="52" r="10"/><circle cx="90" cy="52" r="10"/></g><ellipse cx="22" cy="58" rx="10" ry="5" fill="#F5E9DA" transform="rotate(-15 22 58)"/><ellipse cx="98" cy="58" rx="10" ry="5" fill="#F5E9DA" transform="rotate(15 98 58)"/><ellipse cx="60" cy="62" rx="24" ry="25" fill="#F5E9DA"/><path d="M40 44 q20 -14 40 0 q-4 6 -10 4 q-10 -6 -20 0 q-6 2 -10 -4z" fill="#ECEAE6"/>${bEyes(60)}<g fill="none" stroke="#3F3530" stroke-width="2"><rect x="41" y="52" width="17" height="14" rx="5"/><rect x="62" y="52" width="17" height="14" rx="5"/><path d="M58 58 h4"/></g><ellipse cx="60" cy="72" rx="3.6" ry="2.6" fill="#B07B6A" stroke="none"/><path d="M56 76 q4 3 8 0" fill="none"/>${bBlush(72)}`,
+  otter: () => `${suit("#A9ADB3","#55585F")}<circle cx="34" cy="38" r="7" fill="#A97C5B"/><circle cx="86" cy="38" r="7" fill="#A97C5B"/><circle cx="60" cy="56" r="29" fill="#A97C5B"/><path d="M38 64 q6 -12 22 -12 q16 0 22 12 q-4 16 -22 16 q-18 0 -22 -16z" fill="#F1E2CF"/>${bEyes(52)}<ellipse cx="60" cy="61" rx="5" ry="3.4" fill="#3B2E26" stroke="none"/><path d="M60 64 v2 M55 68 q5 3 10 0" fill="none"/><path d="M44 64 h-12 M44 68 l-11 3 M76 64 h12 M76 68 l11 3" fill="none" stroke-width="1.3"/>${bBlush(64)}`
+};
+function bustSVG(kind, bg){
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" aria-hidden="true"><defs><clipPath id="c${++UID}"><circle cx="60" cy="60" r="58"/></clipPath></defs><circle cx="60" cy="60" r="58" fill="${bg}"/><g clip-path="url(#c${UID})" stroke="${BS}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">${BUST[kind]()}</g><circle cx="60" cy="60" r="58" fill="none" stroke="${BS}" stroke-width="2" opacity=".25"/></svg>`;
+}
+function renderDept(){
+  let n = 0;
+  $("journey").innerHTML = JOURNEY.map(s => {
+    const t0 = s.who ? TYPES[s.who[0]] : null;
+    const style = t0 ? `--tbg:${t0.bg};--tline:${t0.line};--tink:${t0.ink}` : "--tbg:#FFFDF8;--tline:#E3D6C1;--tink:#0B554F";
+    const mark = s.start ? `<span class="jmark start" aria-hidden="true">출발</span>` : `<span class="jmark">${++n}</span>`;
+    const who = s.who ? `<div class="jwho">${s.who.map(k => `<button type="button" class="jfriend" data-type="${k}">${animalSVG(TYPES[k].draw)}<span><small>이 정류장의 친구</small><b>${TYPES[k].name}</b></span></button>`).join("")}</div>` : "";
+    return `<li class="jstop" style="${style}">${mark}<div class="jcard"><div class="jtop"><h3>${s.t}</h3>${s.track ? `<span class="jtrack">${s.track}</span>` : ""}</div><p class="jq">${s.q}</p><p>${s.d}</p><div class="pills">${s.courses.map(c=>`<span class="pill">${c}</span>`).join("")}</div>${who}</div></li>`;
+  }).join("") + `<li class="jstop end"><span class="jmark" aria-hidden="true">도착</span><div class="jcard"><h3>현장으로</h3><p>도서관실무실습과 현장실습에서 지금까지 따라온 길을 국립중앙도서관, 국회도서관 같은 실제 현장에서 직접 걸어 봐요.</p></div></li>`;
+  $("places").innerHTML = PLACES.map(([n,k,d]) => `<li class="place"><span class="pin" aria-hidden="true"></span><div><b>${n}</b><span class="pkind">${k}</span><p>${d}</p></div></li>`).join("");
+  $("practice").innerHTML = PRACTICE.map(([t,w,d]) => `<div class="pcard"><span class="pwhen">${w}</span><b>${t}</b><p>${d}</p></div>`).join("");
+  $("marks").innerHTML = CLUBS.map(([n,d]) => `<div class="mark"><b>${n}</b><span>${d}</span></div>`).join("");
+  $("guides").innerHTML = GUIDES.map(([nm,role,mail,subj,kind,bg]) => `<div class="guide">${bustSVG(kind,bg)}<div class="ginfo"><div><b>${nm}</b><span class="role">${role}</span></div>${mail ? `<p class="mail">${mail}</p>` : ""}<div class="pills">${subj.map(x=>`<span class="pill">${x}</span>`).join("")}</div></div></div>`).join("");
+}
+
+/* ---------- 전역 클릭 ---------- */
+document.addEventListener("click", e => {
+  const s = e.target.closest("[data-start]"); if (s) return startQuiz();
+  const g = e.target.closest("[data-go]"); if (g) return go(g.dataset.go);
+  const t = e.target.closest("[data-type]"); if (t) return go("r-" + t.dataset.type);
+  const j = e.target.closest("[data-jump]"); if (j) { const el = $(j.dataset.jump); el && el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); }
+});
+$("go-home").onclick = () => go("");
+$("start-btn").onclick = startQuiz;
+
+/* ---------- 결과 이미지 ---------- */
+let downloads = null, lastBlob = null, lastName = "";
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2600); }
+function loadImg(src){ return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
+async function makeImage(k){
+  const t = TYPES[k]; const mine = state.mine === k;
+  try { await Promise.all([document.fonts.load('700 72px "Gowun Batang"'), document.fonts.load('32px "Gowun Dodum"')]); } catch(e) {}
+  const W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  x.fillStyle = t.bg; x.fillRect(0,0,W,H);
+  x.fillStyle = "#FFFDF8"; x.strokeStyle = t.line; x.lineWidth = 6;
+  x.beginPath(); x.roundRect(70, 150, W-140, H-290, 56); x.fill(); x.stroke();
+  x.textAlign = "center"; x.fillStyle = "#0B554F";
+  x.font = '700 34px "Gowun Batang", serif'; x.fillText("대구대학교 문헌정보학과 · 졸업 후 직업 테스트", W/2, 100);
+  const svg = animalSVG(t.draw).replace('aria-hidden="true"', 'width="600" height="630"');
+  try { const img = await loadImg("data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg)); x.drawImage(img, W/2-260, 190, 520, 546); } catch(e) {}
+  x.fillStyle = "#6E6255"; x.font = '36px "Gowun Dodum", sans-serif';
+  x.fillText(mine ? "나에게 어울리는 직업은" : "직업 살펴보기", W/2, 800);
+  x.fillStyle = t.ink; x.font = '700 76px "Gowun Batang", serif';
+  x.fillText(t.name, W/2, 895, W-220);
+  x.fillStyle = "#3A322B"; x.font = '38px "Gowun Dodum", sans-serif';
+  x.fillText(t.tag, W/2, 965, W-220);
+  // chips
+  x.font = '32px "Gowun Dodum", sans-serif';
+  const chips = t.keys.map(s => "#" + s.replace(/\s/g,""));
+  const ws = chips.map(s => x.measureText(s).width + 48), total = ws.reduce((a,b)=>a+b,0) + 16*(chips.length-1);
+  let cx = W/2 - total/2;
+  chips.forEach((s,i) => { x.fillStyle = t.bg; x.beginPath(); x.roundRect(cx, 1010, ws[i], 60, 30); x.fill(); x.fillStyle = t.ink; x.fillText(s, cx + ws[i]/2, 1051); cx += ws[i] + 16; });
+  x.fillStyle = "#0B554F"; x.font = '30px "Gowun Dodum", sans-serif';
+  x.fillText("추천 트랙  " + t.track + "   ·   " + t.animal + " 친구", W/2, 1135);
+  x.fillStyle = "#6E6255"; x.font = '28px "Gowun Dodum", sans-serif';
+  x.fillText("lis.daegu.ac.kr   ·   @daegu_univ_lis", W/2, H-60);
+  $("modal-img").src = c.toDataURL("image/png");
+  lastName = `직업유형_${t.name.replace(/[·\s]/g,"")}.png`;
+  lastBlob = await new Promise(r => c.toBlob(r, "image/png"));
+  $("dl-btn").hidden = !downloads;
+  $("modal").hidden = false; $("modal-close").focus();
+}
+$("modal-close").onclick = () => $("modal").hidden = true;
+$("modal").addEventListener("click", e => { if (e.target.id === "modal") $("modal").hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("modal").hidden = true; });
+$("dl-btn").onclick = async () => {
+  if (!downloads || !lastBlob) return;
+  try { await downloads.save({ filename: lastName, data: lastBlob }); toast("이미지를 저장했어요"); }
+  catch(err) {
+    if (err && err.code === "declined") return;
+    if (err && err.code === "rate_limited") return toast("잠시 후 다시 눌러 주세요");
+    $("dl-btn").hidden = true; toast("여기서는 저장 버튼을 쓸 수 없어요. 이미지를 길게 눌러 저장해 주세요");
+  }
+};
+
+/* ---------- 참여자 통계 (db) ---------- */
+let db = null, me = null, statsTried = false, statsTimer = null;
+function renderStats(){
+  const sec = $("stat-sec"); if (!sec) return;
+  if (!state.counts) { sec.hidden = !(!statsTried && db); if (!sec.hidden) $("stats").innerHTML = `<p class="note">참여자 통계를 불러오는 중이에요.</p>`; return; }
+  const total = state.total; if (!total) { sec.hidden = true; return; }
+  sec.hidden = false;
+  const max = Math.max(...Object.values(state.counts), 1);
+  const cur = location.hash.slice(3);
+  $("stats").innerHTML = ORDER.slice().sort((a,b) => state.counts[b]-state.counts[a]).map(k => {
+    const n = state.counts[k], p = Math.round(n/total*100);
+    return `<div class="srow${k===cur?" me":""}"><span class="n">${TYPES[k].name}</span><span class="bar"><i style="width:${n/max*100}%"></i></span><span class="pct">${p}%</span></div>`;
+  }).join("");
+  $("stat-note").textContent = `지금까지 ${total}명이 참여했어요.`;
+}
+function renderCount(){
+  if (state.total) $("count-line").innerHTML = `10문항 · 약 2분 · 지금까지 <b>${state.total}명</b>이 참여했어요`;
+}
+async function saveResult(k){
+  if (!db || !me) return;
+  try { await db.doc("results/" + me).set({ type: k, at: Date.now() }); } catch(e) {}
+}
+(async function initCaps(){
+  if (!window.claude || !window.claude.use) { statsTried = true; renderStats(); return; }
+  claude.use("downloads").then(d => { downloads = d; }).catch(() => {});
+  try {
+    const [d, u] = await Promise.all([claude.use("db"), claude.use("user")]);
+    db = d;
+    if (u) { try { me = await u.id(); } catch(e) {} }
+    if (!db) { statsTried = true; renderStats(); return; }
+    renderStats();
+    statsTimer = setTimeout(() => { if (!state.counts) { statsTried = true; renderStats(); } }, 10000);
+    db.collection("results").onSnapshot(snap => {
+      clearTimeout(statsTimer);
+      const counts = Object.fromEntries(ORDER.map(k => [k,0])); let total = 0;
+      snap.docs.forEach(doc => { const v = doc.data(); if (v && counts[v.type] !== undefined) { counts[v.type]++; total++; } });
+      state.counts = counts; state.total = total; statsTried = true;
+      renderStats(); renderCount();
+    }, () => { clearTimeout(statsTimer); statsTried = true; renderStats(); });
+  } catch(e) { statsTried = true; renderStats(); }
+})();
+
+renderStart(); renderDex(); renderDept();
+window.addEventListener("hashchange", route);
+route();
+</script>
+
+</body>
+</html>
