@@ -921,9 +921,38 @@ $("dl-btn").onclick = async () => {
 
 /* ---------- 참여자 통계 (db) ---------- */
 let db = null, me = null, statsTried = false, statsTimer = null;
+/* GitHub Pages 등 Claude 밖에서 열었을 때 쓰는 무료 공개 집계 (abacus.jasoncameron.dev) */
+const PUBLIC_API = "https://abacus.jasoncameron.dev", PUBLIC_NS = "dutlsrkgus-lis-test";
+let usePublic = false;
+async function loadPublic(){
+  usePublic = true; renderStats();
+  const vals = await Promise.all(ORDER.map(k =>
+    fetch(`${PUBLIC_API}/get/${PUBLIC_NS}/${k}`)
+      .then(r => r.status === 404 ? { value: 0 } : (r.ok ? r.json() : Promise.reject(r.status)))
+      .then(j => Math.max(0, Number(j.value) || 0))
+      .catch(() => null)));
+  statsTried = true;
+  if (vals.every(v => v === null)) { renderStats(); return; }
+  const counts = {}; let total = 0;
+  ORDER.forEach((k,i) => { counts[k] = vals[i] || 0; total += counts[k]; });
+  state.counts = counts; state.total = total;
+  renderStats(); renderCount();
+}
+async function hitPublic(k){
+  try {
+    const r = await fetch(`${PUBLIC_API}/hit/${PUBLIC_NS}/${k}`);
+    if (!r.ok) return;
+    const j = await r.json();
+    if (state.counts) {
+      const v = Math.max(0, Number(j.value) || 0);
+      state.total += v - state.counts[k]; state.counts[k] = v;
+    } else { state.counts = Object.fromEntries(ORDER.map(x => [x, 0])); state.counts[k] = Number(j.value) || 1; state.total = state.counts[k]; }
+    renderStats(); renderCount();
+  } catch(e) {}
+}
 function renderStats(){
   const sec = $("stat-sec"); if (!sec) return;
-  if (!state.counts) { sec.hidden = !(!statsTried && db); if (!sec.hidden) $("stats").innerHTML = `<p class="note">참여자 통계를 불러오는 중이에요.</p>`; return; }
+  if (!state.counts) { sec.hidden = !(!statsTried && (db || usePublic)); if (!sec.hidden) $("stats").innerHTML = `<p class="note">참여자 통계를 불러오는 중이에요.</p>`; return; }
   const total = state.total; if (!total) { sec.hidden = true; return; }
   sec.hidden = false;
   const max = Math.max(...Object.values(state.counts), 1);
@@ -932,17 +961,18 @@ function renderStats(){
     const n = state.counts[k], p = Math.round(n/total*100);
     return `<div class="srow${k===cur?" me":""}"><span class="n">${TYPES[k].name}</span><span class="bar"><i style="width:${n/max*100}%"></i></span><span class="pct">${p}%</span></div>`;
   }).join("");
-  $("stat-note").textContent = `지금까지 ${total}명이 참여했어요.`;
+  $("stat-note").textContent = usePublic ? `지금까지 테스트 결과가 ${total}번 나왔어요.` : `지금까지 ${total}명이 참여했어요.`;
 }
 function renderCount(){
-  if (state.total) $("count-line").innerHTML = `10문항 · 약 2분 · 지금까지 <b>${state.total}명</b>이 참여했어요`;
+  if (state.total) $("count-line").innerHTML = usePublic ? `10문항 · 약 2분 · 지금까지 <b>${state.total}번</b> 참여했어요` : `10문항 · 약 2분 · 지금까지 <b>${state.total}명</b>이 참여했어요`;
 }
 async function saveResult(k){
+  if (usePublic) return hitPublic(k);
   if (!db || !me) return;
   try { await db.doc("results/" + me).set({ type: k, at: Date.now() }); } catch(e) {}
 }
 (async function initCaps(){
-  if (!window.claude || !window.claude.use) { statsTried = true; renderStats(); return; }
+  if (!window.claude || !window.claude.use) { loadPublic(); return; }
   claude.use("downloads").then(d => { downloads = d; }).catch(() => {});
   try {
     const [d, u] = await Promise.all([claude.use("db"), claude.use("user")]);
