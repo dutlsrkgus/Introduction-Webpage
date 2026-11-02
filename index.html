@@ -952,8 +952,18 @@ async function hitPublic(k){
 }
 function renderStats(){
   const sec = $("stat-sec"); if (!sec) return;
-  if (!state.counts) { sec.hidden = !(!statsTried && (db || usePublic)); if (!sec.hidden) $("stats").innerHTML = `<p class="note">참여자 통계를 불러오는 중이에요.</p>`; return; }
-  const total = state.total; if (!total) { sec.hidden = true; return; }
+  if (!state.counts) {
+    if (usePublic && statsTried) { sec.hidden = false; $("stats").innerHTML = `<p class="note">통계 서비스에 연결하지 못했어요. 잠시 후 새로고침해 주세요.</p>`; $("stat-note").textContent = ""; return; }
+    sec.hidden = !(!statsTried && (db || usePublic));
+    if (!sec.hidden) { $("stats").innerHTML = `<p class="note">참여자 통계를 불러오는 중이에요.</p>`; $("stat-note").textContent = ""; }
+    return;
+  }
+  const total = state.total;
+  if (!total) {
+    sec.hidden = !usePublic;
+    if (usePublic) { $("stats").innerHTML = `<p class="note">아직 참여 기록이 없어요. 테스트를 끝까지 하면 여기에 첫 기록이 생겨요.</p>`; $("stat-note").textContent = ""; }
+    return;
+  }
   sec.hidden = false;
   const max = Math.max(...Object.values(state.counts), 1);
   const cur = location.hash.slice(3);
