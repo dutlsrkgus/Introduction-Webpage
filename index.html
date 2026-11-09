@@ -421,6 +421,26 @@ html.side-open .side{transform:none;box-shadow:0 0 40px rgba(58,50,43,.25)}
 .bgm-btn[aria-pressed="true"] .bgm-wave{display:flex}
 @keyframes eq{0%,100%{height:3px}50%{height:10px}}
 @media (prefers-reduced-motion:reduce){.bgm-wave i{animation:none;height:6px}}
+
+/* tap the book to turn the pages again */
+.dhero-art{cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:16px}
+.dhero-art:focus-visible{outline:3px solid var(--lime);outline-offset:4px}
+.dhero .dhero-art.flipping .pg{animation:pageTurn2 .62s cubic-bezier(.45,.05,.4,1) both}
+.dhero .dhero-art.flipping .p1{animation-delay:0s}
+.dhero .dhero-art.flipping .p2{animation-delay:.18s}
+.dhero .dhero-art.flipping .p3{animation-delay:.36s}
+.dhero .dhero-art.flipping .p4{animation-delay:.54s}
+@keyframes pageTurn2{
+  0%{opacity:1;transform:scaleX(1) skewY(0deg);fill:#FFFDF8}
+  45%{fill:#F1E6D2;transform:scaleX(.15) skewY(-9deg)}
+  55%{fill:#E9DCC4;transform:scaleX(-.15) skewY(9deg)}
+  90%{opacity:1;fill:#FFF8E6;transform:scaleX(-1) skewY(0deg)}
+  100%{opacity:0;transform:scaleX(-1)}}
+/* internship places link to their official sites */
+a.place{color:inherit;text-decoration:none}
+a.place:hover{border-color:var(--teal-deep)}
+.pgo{display:inline-block;margin-top:6px;font-size:13.5px;color:var(--teal);font-weight:400}
+a.place:hover .pgo{text-decoration:underline}
 </style>
 
 <header class="top">
@@ -511,7 +531,7 @@ html.side-open .side{transform:none;box-shadow:0 0 40px rgba(58,50,43,.25)}
   <!-- DEPT -->
   <section class="view wrap" id="v-dept" hidden>
     <div class="dhero">
-      <div class="dhero-art" aria-hidden="true">
+      <div class="dhero-art" id="book-art" role="button" tabindex="0" aria-label="책장 넘기기" title="눌러서 책장 넘기기">
         <svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg">
           <path d="M70 128 C 120 150, 160 70, 210 92 S 280 40, 296 26" fill="none" stroke="#0F6E66" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
           <g stroke="#6B5444" stroke-width="2.4" stroke-linejoin="round">
@@ -1004,12 +1024,12 @@ const JOURNEY = [
   { t:"오래 지키기", q:"오늘의 기록을 백 년 뒤에도 볼 수 있을까?", d:"남길 가치가 있는 기록을 골라 안전하게 보존하고, 필요한 사람이 언제든 볼 수 있도록 관리해요.", courses:["기록학개론"], who:["archivist"] }
 ];
 const PLACES = [
-  ["국립중앙도서관","국가대표 도서관","우리나라 모든 출판물을 모으고 지키는 국가도서관에서 실습해요."],
-  ["국회도서관","의회도서관","국회의 입법 활동을 돕는 도서관에서 정보 서비스를 경험해요."],
-  ["대구대학교 학술정보원","대학도서관","우리 학교 도서관에서 대학도서관 업무를 직접 해 봐요."],
-  ["전문도서관","전문 분야 도서관","기업, 연구소, 기관에 있는 특정 분야 전문도서관에서 실습해요."],
-  ["학교도서관","학교 현장","초·중·고 학교도서관에서 사서교사의 일을 가까이에서 배워요."],
-  ["한국전력기술","하반기 국내현장실습","공기업 현장에서 기업의 정보와 기록을 다루는 일을 경험해요."]
+  ["국립중앙도서관","https://www.nl.go.kr","국가대표 도서관","우리나라 모든 출판물을 모으고 지키는 국가도서관에서 실습해요."],
+  ["국회도서관","https://www.nanet.go.kr","의회도서관","국회의 입법 활동을 돕는 도서관에서 정보 서비스를 경험해요."],
+  ["대구대학교 학술정보원","https://lib.daegu.ac.kr","대학도서관","우리 학교 도서관에서 대학도서관 업무를 직접 해 봐요."],
+  ["전문도서관","https://ksla.info","전문 분야 도서관","기업, 연구소, 기관에 있는 특정 분야 전문도서관에서 실습해요."],
+  ["학교도서관","","학교 현장","초·중·고 학교도서관에서 사서교사의 일을 가까이에서 배워요."],
+  ["한국전력기술","https://www.kepco-enc.com","하반기 국내현장실습","공기업 현장에서 기업의 정보와 기록을 다루는 일을 경험해요."]
 ];
 const PRACTICE = [
   ["컴퓨터 실습 수업","전 학년","한 사람에 한 대씩 컴퓨터가 있는 강의실에서 데이터베이스, 정보검색, 정보이용행태 분석을 직접 해요."],
@@ -1052,7 +1072,10 @@ function renderDept(){
     const who = s.who ? `<div class="jwho">${s.who.map(k => `<button type="button" class="jfriend" data-type="${k}">${animalSVG(TYPES[k].draw)}<span><small>이 정류장의 친구</small><b>${TYPES[k].name}</b></span></button>`).join("")}</div>` : "";
     return `<li class="jstop" style="${style}">${mark}<div class="jcard"><div class="jtop"><h3>${s.t}</h3>${s.track ? `<span class="jtrack">${s.track}</span>` : ""}</div><p class="jq">${s.q}</p><p>${s.d}</p><div class="pills">${s.courses.map(c=>`<span class="pill">${c}</span>`).join("")}</div>${who}</div></li>`;
   }).join("") + `<li class="jstop end"><span class="jmark" aria-hidden="true">도착</span><div class="jcard"><h3>현장으로</h3><p>도서관실무실습과 현장실습에서 지금까지 따라온 길을 국립중앙도서관, 국회도서관 같은 실제 현장에서 직접 걸어 봐요.</p></div></li>`;
-  $("places").innerHTML = PLACES.map(([n,k,d]) => `<li class="place"><span class="pin" aria-hidden="true"></span><div><b>${n}</b><span class="pkind">${k}</span><p>${d}</p></div></li>`).join("");
+  $("places").innerHTML = PLACES.map(([n,url,k,d]) => {
+    const body = `<span class="pin" aria-hidden="true"></span><div><b>${n}</b><span class="pkind">${k}</span><p>${d}</p>${url ? `<span class="pgo">홈페이지 바로가기 ↗</span>` : ""}</div>`;
+    return url ? `<li><a class="place" href="${url}" target="_blank" rel="noopener">${body}</a></li>` : `<li class="place">${body}</li>`;
+  }).join("");
   $("practice").innerHTML = PRACTICE.map(([t,w,d]) => `<div class="pcard"><span class="pwhen">${w}</span><b>${t}</b><p>${d}</p></div>`).join("");
   $("marks").innerHTML = CLUBS.map(([n,d]) => `<div class="mark"><b>${n}</b><span>${d}</span></div>`).join("");
   $("guides").innerHTML = GUIDES.map(([nm,role,mail,subj,kind,bg]) => `<div class="guide">${bustSVG(kind,bg)}<div class="ginfo"><div><b>${nm}</b><span class="role">${role}</span></div>${mail ? `<p class="mail">${mail}</p>` : ""}<div class="pills">${subj.map(x=>`<span class="pill">${x}</span>`).join("")}</div></div></div>`).join("");
@@ -1064,7 +1087,7 @@ function playDeptHero(){
   const hero = document.querySelector("#v-dept .dhero"); if (!hero) return;
   [...hero.children].forEach((el, i) => el.style.setProperty("--i", i));
   hero.querySelectorAll(".fact").forEach((el, i) => el.style.setProperty("--i", 4 + i));
-  hero.classList.remove("seq"); void hero.offsetWidth;
+  $("book-art").classList.remove("flipping"); hero.classList.remove("seq"); void hero.offsetWidth;
   if (!REDUCE.matches) { hero.classList.add("seq"); if (typeof BGM !== "undefined") BGM.rustle([450, 630, 810, 990]); }
 }
 let riseObs = null;
@@ -1264,6 +1287,15 @@ if (store("lis-bgm") === "1") {
   };
   window.addEventListener("pointerdown", resumeOnce, true); window.addEventListener("keydown", resumeOnce, true);
 }
+
+/* ---------- 책 누르면 책장 다시 넘기기 ---------- */
+function flipBook(){
+  const art = $("book-art"); if (!art || REDUCE.matches) return;
+  art.classList.remove("flipping"); void art.offsetWidth; art.classList.add("flipping");
+  if (typeof BGM !== "undefined") BGM.rustle([0, 180, 360, 540]);
+}
+$("book-art").addEventListener("click", flipBook);
+$("book-art").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flipBook(); } });
 
 /* ---------- 전역 클릭 ---------- */
 document.addEventListener("click", e => {
