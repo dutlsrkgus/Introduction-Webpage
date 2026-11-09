@@ -268,6 +268,15 @@ ul.space{list-style:none;margin:0;padding:0}
 @keyframes sway{0%,100%{transform:rotate(-1.8deg)}50%{transform:rotate(1.8deg) translateY(-2px)}}
 @keyframes showOnce{0%,100%{opacity:0}12%,85%{opacity:1}}
 @keyframes hideOnce{0%,100%{opacity:1}12%,85%{opacity:0}}
+/* hero: elements rise in one after another, top to bottom */
+.dhero.seq > *,.dhero.seq .fact{animation:seqIn .75s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 140ms)}
+@keyframes seqIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.dhero-art path[stroke-dasharray]{stroke-dashoffset:0}
+.dhero.seq .dhero-art path[stroke-dasharray]{animation:trail 1.6s .2s ease-out both}
+@keyframes trail{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+/* below the hero: sections rise as they scroll into view (resting state stays readable) */
+.rise{opacity:.35;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);transition-delay:var(--rd,0ms)}
+.rise.in{opacity:1;transform:none}
 /* modal */
 .modal{position:fixed;inset:0;background:rgba(58,50,43,.55);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:50}
 .sheet{background:var(--paper);border-radius:24px;padding:18px;max-width:420px;width:100%;max-height:100%;overflow:auto;display:grid;gap:12px;justify-items:center;text-align:center}
@@ -692,7 +701,7 @@ function go(hash){ if (location.hash.slice(1) === hash) route(); else location.h
 function route(){
   const h = location.hash.slice(1);
   if (h === "types") return show("types");
-  if (h === "dept") return show("dept");
+  if (h === "dept") { show("dept"); playDeptHero(); armRise(); return; }
   if (h === "quiz") { if (!state.answers.length) state.i = 0; renderQ(); return show("quiz"); }
   if (h.startsWith("r-") && TYPES[h.slice(2)]) { renderResult(h.slice(2)); return show("result"); }
   show("start");
@@ -885,6 +894,33 @@ function renderDept(){
   $("marks").innerHTML = CLUBS.map(([n,d]) => `<div class="mark"><b>${n}</b><span>${d}</span></div>`).join("");
   $("guides").innerHTML = GUIDES.map(([nm,role,mail,subj,kind,bg]) => `<div class="guide">${bustSVG(kind,bg)}<div class="ginfo"><div><b>${nm}</b><span class="role">${role}</span></div>${mail ? `<p class="mail">${mail}</p>` : ""}<div class="pills">${subj.map(x=>`<span class="pill">${x}</span>`).join("")}</div></div></div>`).join("");
 }
+
+/* ---------- 학과 소개: 위에서부터 차례로 나타나기 ---------- */
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)");
+function playDeptHero(){
+  const hero = document.querySelector("#v-dept .dhero"); if (!hero) return;
+  [...hero.children].forEach((el, i) => el.style.setProperty("--i", i));
+  hero.querySelectorAll(".fact").forEach((el, i) => el.style.setProperty("--i", 4 + i));
+  hero.classList.remove("seq"); void hero.offsetWidth;
+  if (!REDUCE.matches) hero.classList.add("seq");
+}
+let riseObs = null;
+function setupRise(){
+  if (REDUCE.matches || !("IntersectionObserver" in window)) return;
+  riseObs = new IntersectionObserver(entries => entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("in"); riseObs.unobserve(e.target); }
+  }), { rootMargin: "0px 0px -8% 0px" });
+}
+function armRise(){
+  if (!riseObs) return;
+  const targets = [...document.querySelectorAll("#v-dept .chapter > *:not(.journey)"), ...document.querySelectorAll("#v-dept .jstop")];
+  targets.forEach((el, i) => {
+    el.classList.remove("in"); el.classList.add("rise");
+    el.style.setProperty("--rd", (el.classList.contains("jstop") ? 0 : (i % 4) * 70) + "ms");
+    riseObs.observe(el);
+  });
+}
+setupRise();
 
 /* ---------- 전역 클릭 ---------- */
 document.addEventListener("click", e => {
