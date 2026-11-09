@@ -301,7 +301,7 @@ ul.space{list-style:none;margin:0;padding:0}
   .places{grid-template-columns:repeat(2,minmax(0,1fr))}
   .rcard{padding:28px 28px 32px}
 }
-@media (min-width:1024px){
+@container page (min-width:940px){
   .wrap{max-width:1120px}
   #v-quiz.wrap{max-width:780px}
   .top .wrap{padding-block:16px}
@@ -340,10 +340,64 @@ ul.space{list-style:none;margin:0;padding:0}
   .dcard:hover,.mini:hover{transform:none}
 }
 @media (prefers-reduced-motion:reduce){.box:hover,.pcard:hover,.place:hover,.guide:hover,.fact:hover,.jcard:hover,.season-col:hover,.mark:hover,.panel:hover,.dcard:hover,.mini:hover,.opt:hover,.jfriend:hover,.contact li:hover,.faq details:hover{translate:none}}
+
+/* ===== sidebar: drawer on phone/tablet, fixed rail on desktop (collapsible) ===== */
+:root{--side-w:256px;--side-mini:76px}
+main{container:page / inline-size}
+.ico{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.top .wrap{justify-content:flex-start}
+.top .nav{margin-left:auto}
+.menu-btn{display:grid;place-items:center;width:40px;height:40px;margin-left:-8px;border:0;background:none;border-radius:12px;color:var(--teal-deep);cursor:pointer}
+.menu-btn:hover{background:var(--paper-2)}
+.side{position:fixed;top:0;bottom:0;left:0;z-index:45;width:min(var(--side-w),86vw);display:flex;flex-direction:column;gap:8px;background:var(--card);border-right:1px solid var(--line);
+  padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(14px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));
+  overflow-y:auto;overscroll-behavior:contain;transform:translateX(-105%);transition:transform .28s cubic-bezier(.2,.7,.2,1),width .25s ease}
+html.side-open .side{transform:none;box-shadow:0 0 40px rgba(58,50,43,.25)}
+.side-backdrop{position:fixed;inset:0;z-index:44;background:rgba(58,50,43,.4)}
+.side-head{display:flex;align-items:center;gap:8px;padding:2px 2px 10px;border-bottom:1px dashed var(--line)}
+.side-brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0;border:0;background:none;padding:4px;border-radius:12px;cursor:pointer;text-align:left}
+.side-logo{flex:none;width:40px;height:40px;border-radius:12px;background:var(--teal);color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:20px;box-shadow:inset 0 -4px 0 var(--teal-deep)}
+.side-brand .side-text{display:grid;line-height:1.25;min-width:0}
+.side-brand b{font-family:var(--display);color:var(--teal-deep);font-size:16px;white-space:nowrap}
+.side-brand small{font-size:12px;color:var(--ink-soft)}
+.side-close{flex:none;display:grid;place-items:center;width:36px;height:36px;border:0;background:none;border-radius:10px;color:var(--ink-soft);cursor:pointer}
+.side-close:hover{background:var(--paper-2)}
+.side-nav{display:grid;gap:4px;align-content:start;flex:1}
+.side-row{display:flex;align-items:center;gap:2px}
+.side-item{display:flex;align-items:center;gap:12px;flex:1;min-width:0;border:0;background:none;padding:10px 12px;border-radius:12px;color:var(--ink-soft);font-size:15.5px;cursor:pointer;text-align:left;white-space:nowrap}
+.side-item:hover{background:var(--paper-2);color:var(--ink)}
+.side-item[aria-current="page"]{background:var(--teal-soft);color:var(--teal-deep)}
+.side-fold{flex:none;display:grid;place-items:center;width:34px;height:34px;border:0;background:none;border-radius:10px;color:var(--ink-soft);cursor:pointer}
+.side-fold:hover{background:var(--paper-2)}
+.side-fold .ico{width:18px;height:18px;transition:transform .2s ease}
+.side-fold[aria-expanded="false"] .ico{transform:rotate(-90deg)}
+.side-sub{list-style:none;margin:2px 0 8px 23px;padding:0 0 0 12px;border-left:2px dashed var(--line);display:grid;gap:2px}
+.side-sub button{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;padding:5px 10px;border-radius:10px;font-size:14px;color:var(--ink-soft);cursor:pointer;text-align:left}
+.side-sub button:hover{background:var(--paper-2);color:var(--ink)}
+.side-sub button.on,.side-sub button[aria-current="true"]{background:var(--lime-soft);color:#4F5717}
+.side-sub .tiny{width:26px;height:auto;flex:none}
+.side-sub .tiny .critter .bodyg{animation:none}
+.side-collapse{display:none;align-items:center;gap:12px;border:0;background:none;padding:10px 12px;border-radius:12px;color:var(--ink-soft);font-size:14px;cursor:pointer;white-space:nowrap}
+.side-collapse:hover{background:var(--paper-2);color:var(--ink)}
+.side-collapse .ico{transition:transform .25s ease}
+@media (min-width:1024px){
+  .top{display:none}
+  .side{transform:none;width:var(--side-w)}
+  .side-backdrop,.side-close{display:none!important}
+  .side-collapse{display:flex}
+  main{margin-left:var(--side-w);transition:margin-left .25s ease}
+  html.side-mini .side{width:var(--side-mini)}
+  html.side-mini main{margin-left:var(--side-mini)}
+  html.side-mini .side-text,html.side-mini .side-sub,html.side-mini .side-fold{display:none}
+  html.side-mini .side-item,html.side-mini .side-collapse,html.side-mini .side-brand{justify-content:center;padding-inline:0}
+  html.side-mini .side-collapse .ico{transform:rotate(180deg)}
+}
+@media (prefers-reduced-motion:reduce){.side,main{transition:none}}
 </style>
 
 <header class="top">
   <div class="wrap">
+    <button class="menu-btn" id="menu-btn" type="button" aria-label="메뉴 열기" aria-controls="side" aria-expanded="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <button class="brand" id="go-home" type="button">대구대학교 문헌정보학과</button>
     <nav class="nav" aria-label="메뉴">
             <button type="button" id="nav-types" data-go="types">직업 도감</button>
@@ -351,6 +405,32 @@ ul.space{list-style:none;margin:0;padding:0}
     </nav>
   </div>
 </header>
+
+<div class="side-backdrop" id="side-backdrop" hidden></div>
+<aside class="side" id="side" aria-label="사이드 메뉴">
+  <div class="side-head">
+    <button class="side-brand" type="button" data-go="" title="처음으로"><span class="side-logo" aria-hidden="true">문</span><span class="side-text"><b>문헌정보학과</b><small>대구대학교</small></span></button>
+    <button class="side-close" id="side-close" type="button" aria-label="메뉴 닫기"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <nav class="side-nav" aria-label="사이트 메뉴">
+    <button class="side-item" type="button" data-nav="start" data-go="" title="직업 테스트"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l1 2h3v14H5V6h3z"/><path d="M9 13l2 2 4-4"/></svg><span class="side-text">직업 테스트</span></button>
+    <div class="side-group">
+      <div class="side-row">
+        <button class="side-item" type="button" data-nav="types" data-go="types" title="직업 도감"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg><span class="side-text">직업 도감</span></button>
+        <button class="side-fold" type="button" aria-expanded="true" aria-controls="sg-types" aria-label="직업 목록 접기"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
+      </div>
+      <ul class="side-sub" id="sg-types"></ul>
+    </div>
+    <div class="side-group">
+      <div class="side-row">
+        <button class="side-item" type="button" data-nav="dept" data-go="dept" title="학과 소개"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5c3-1.2 6-1 9 1v13c-3-2-6-2.2-9-1z"/><path d="M21 5.5c-3-1.2-6-1-9 1v13c3-2 6-2.2 9-1z"/></svg><span class="side-text">학과 소개</span></button>
+        <button class="side-fold" type="button" aria-expanded="true" aria-controls="sg-dept" aria-label="학과 소개 목차 접기"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
+      </div>
+      <ul class="side-sub" id="sg-dept"></ul>
+    </div>
+  </nav>
+  <button class="side-collapse" id="side-collapse" type="button" aria-label="사이드바 접기" title="사이드바 접기"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6l-6 6 6 6"/><path d="M19 6l-6 6 6 6"/></svg><span class="side-text">사이드바 접기</span></button>
+</aside>
 
 <main>
   <!-- START -->
@@ -749,12 +829,13 @@ function show(view){
   document.querySelectorAll(".nav button").forEach(b => b.removeAttribute("aria-current"));
   if (map[view]) $(map[view]).setAttribute("aria-current","page");
   window.scrollTo(0,0);
+  if (typeof syncSide === "function") syncSide(view);
 }
 function go(hash){ if (location.hash.slice(1) === hash) route(); else location.hash = hash; }
 function route(){
   const h = location.hash.slice(1);
   if (h === "types") return show("types");
-  if (h === "dept") { show("dept"); playDeptHero(); armRise(); return; }
+  if (h === "dept") { show("dept"); playDeptHero(); armRise(); if (pendingJump) { const id = pendingJump; pendingJump = null; setTimeout(() => jumpTo(id), 60); } return; }
   if (h === "quiz") { if (!state.answers.length) state.i = 0; renderQ(); return show("quiz"); }
   if (h.startsWith("r-") && TYPES[h.slice(2)]) { renderResult(h.slice(2)); return show("result"); }
   show("start");
@@ -975,6 +1056,79 @@ function armRise(){
 }
 setupRise();
 
+/* ---------- 사이드바: 펼치기/접기 ---------- */
+const DEPT_SECTIONS = [["d-route","여행 경로"],["d-practice","실습"],["d-life","학과생활"],["d-after","졸업 후"],["d-guides","교수진"],["d-faq","자주 묻는 질문"]];
+let pendingJump = null;
+function store(k, v){ try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(e) { return null; } }
+function initSide(){
+  document.querySelectorAll("#v-dept .chapter").forEach((el, i) => { if (DEPT_SECTIONS[i]) el.id = DEPT_SECTIONS[i][0]; });
+  $("sg-types").innerHTML = ORDER.map(k => `<li><button type="button" data-type="${k}" data-sub="${k}"><span class="tiny">${animalSVG(TYPES[k].draw)}</span><span>${TYPES[k].name}</span></button></li>`).join("");
+  $("sg-dept").innerHTML = DEPT_SECTIONS.map(([id, label]) => `<li><button type="button" data-djump="${id}">${label}</button></li>`).join("");
+  let folds = {}; try { folds = JSON.parse(store("lis-side-folds") || "{}"); } catch(e) {}
+  document.querySelectorAll(".side-fold").forEach(btn => setFold(btn, folds[btn.getAttribute("aria-controls")] !== false));
+  if (store("lis-side-mini") === "1") document.documentElement.classList.add("side-mini");
+  syncCollapseLabel();
+  if ("IntersectionObserver" in window) {
+    const spy = new IntersectionObserver(entries => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      document.querySelectorAll("#sg-dept button").forEach(b => b.classList.toggle("on", b.dataset.djump === e.target.id));
+    }), { rootMargin: "-35% 0px -55% 0px" });
+    DEPT_SECTIONS.forEach(([id]) => { const el = $(id); el && spy.observe(el); });
+  }
+}
+function setFold(btn, open){
+  btn.setAttribute("aria-expanded", open);
+  const list = $(btn.getAttribute("aria-controls")); if (list) list.hidden = !open;
+  const what = btn.getAttribute("aria-controls") === "sg-types" ? "직업 목록" : "학과 소개 목차";
+  btn.setAttribute("aria-label", `${what} ${open ? "접기" : "펼치기"}`);
+}
+function syncCollapseLabel(){
+  const mini = document.documentElement.classList.contains("side-mini");
+  const b = $("side-collapse"); const label = mini ? "사이드바 펼치기" : "사이드바 접기";
+  b.setAttribute("aria-label", label); b.title = label; b.querySelector(".side-text").textContent = label;
+}
+function openSide(open){
+  document.documentElement.classList.toggle("side-open", open);
+  $("side-backdrop").hidden = !open;
+  $("menu-btn").setAttribute("aria-expanded", open);
+  if (open) $("side-close").focus();
+}
+function syncSide(view){
+  const nav = view === "result" ? "types" : (view === "quiz" ? "start" : view);
+  document.querySelectorAll(".side-item[data-nav]").forEach(b => b.dataset.nav === nav ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
+  const cur = view === "result" ? location.hash.slice(3) : "";
+  document.querySelectorAll("#sg-types button").forEach(b => b.setAttribute("aria-current", b.dataset.sub === cur ? "true" : "false"));
+}
+function jumpTo(id){
+  const el = $(id); if (!el) return;
+  el.querySelectorAll(".rise").forEach(x => x.classList.add("in"));
+  el.scrollIntoView({ behavior: REDUCE.matches ? "auto" : "smooth", block: "start" });
+}
+$("menu-btn").addEventListener("click", () => openSide(true));
+$("side-close").addEventListener("click", () => openSide(false));
+$("side-backdrop").addEventListener("click", () => openSide(false));
+document.addEventListener("keydown", e => { if (e.key === "Escape" && document.documentElement.classList.contains("side-open")) openSide(false); });
+$("side-collapse").addEventListener("click", () => {
+  const mini = document.documentElement.classList.toggle("side-mini");
+  store("lis-side-mini", mini ? "1" : "0"); syncCollapseLabel();
+});
+$("side").addEventListener("click", e => {
+  const f = e.target.closest(".side-fold");
+  if (f) {
+    const open = f.getAttribute("aria-expanded") !== "true"; setFold(f, open);
+    let folds = {}; try { folds = JSON.parse(store("lis-side-folds") || "{}"); } catch(err) {}
+    folds[f.getAttribute("aria-controls")] = open; store("lis-side-folds", JSON.stringify(folds));
+    return;
+  }
+  const d = e.target.closest("[data-djump]");
+  if (d) {
+    e.stopPropagation();
+    if (location.hash.slice(1) === "dept") jumpTo(d.dataset.djump);
+    else { pendingJump = d.dataset.djump; go("dept"); }
+  }
+  if (e.target.closest("button:not(.side-fold)")) openSide(false);
+});
+
 /* ---------- 전역 클릭 ---------- */
 document.addEventListener("click", e => {
   const s = e.target.closest("[data-start]"); if (s) return startQuiz();
@@ -1118,7 +1272,7 @@ async function saveResult(k){
   } catch(e) { statsTried = true; renderStats(); }
 })();
 
-renderStart(); renderDex(); renderDept();
+renderStart(); renderDex(); renderDept(); initSide();
 window.addEventListener("hashchange", route);
 route();
 </script>
