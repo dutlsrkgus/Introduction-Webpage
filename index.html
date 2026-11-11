@@ -14,6 +14,14 @@
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0F6E66">
+<script>
+/* 화면이 그려지기 전에 테마·움직임 설정을 먼저 적용해 깜빡임을 막아요 */
+(function(){ var d = document.documentElement, t = null, m = null;
+  try { t = localStorage.getItem("lis-theme"); m = localStorage.getItem("lis-rm"); } catch(e) {}
+  if (t !== "dark" && t !== "light") t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  d.setAttribute("data-theme", t); if (m === "1") d.classList.add("rm");
+})();
+</script>
 </head>
 <body>
 <title>문헌정보학과 직업 테스트 | 대구대학교 문헌정보학과</title>
@@ -441,6 +449,233 @@ a.place{color:inherit;text-decoration:none}
 a.place:hover{border-color:var(--teal-deep)}
 .pgo{display:inline-block;margin-top:6px;font-size:13.5px;color:var(--teal);font-weight:400}
 a.place:hover .pgo{text-decoration:underline}
+
+/* =====================================================================
+   움직임과 표현 (바이브코딩 2편) 적용
+   ===================================================================== */
+:root{--hi:var(--teal);--spring:cubic-bezier(.34,1.56,.64,1);--out:cubic-bezier(.2,.7,.2,1)}
+
+/* ----- Dark Mode: 글자·카드·테두리 색을 함께 바꿈 ----- */
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#1C1A17; --paper-2:#28241F; --card:#24201C;
+  --ink:#EDE5D8; --ink-soft:#B3A796; --line:#3D362F;
+  --teal:#1F8478; --teal-deep:#8FD5C9; --teal-soft:#1E3734; --lime:#CFDD5C; --lime-soft:#343A1C;
+  --hi:#6CCBBE;
+}
+html.theme-anim,html.theme-anim :not(.switch,.theme-ico *),html.theme-anim :not(.switch)::before,html.theme-anim :not(.switch)::after{transition:background-color .3s ease,color .3s ease,border-color .3s ease,box-shadow .3s ease!important}
+html[data-theme="dark"] :is(a,.brand,.eyebrow,.btn.ghost,.count-line b,.linkbtn:hover,.day time,.chapter > .ch-label,.contact li span:first-child,.guide .role,.pgo,.opt .k){color:var(--hi)}
+html[data-theme="dark"] .btn.ghost{border-color:var(--hi)}
+html[data-theme="dark"] .btn:not(.ghost):hover{background:#18695F}
+html[data-theme="dark"] .btn.ghost:hover{background:var(--teal-soft)}
+html[data-theme="dark"] .opt.sel .k{color:#fff}
+html[data-theme="dark"] :is(.cta .btn,.jmark.start,.jstop.end .jmark){color:#16332F}
+html[data-theme="dark"] .bgm-wave i{background:#16332F}
+html[data-theme="dark"] :is(.pill.lime,.pwhen,.side-sub button.on,.side-sub button[aria-current="true"]){color:#DCE78E}
+html[data-theme="dark"] .shelf .plank{background:#5A4A36;box-shadow:inset 0 -3px 0 #46392A}
+html[data-theme="dark"] .season-col{background:#26301F}
+html[data-theme="dark"] .season-col.fall{background:#352B1E}
+html[data-theme="dark"] .srow .bar i{background:#4C5D59}
+html[data-theme="dark"] .srow.me .bar i{background:var(--hi)}
+html[data-theme="dark"] .journey::before{border-color:#2F4A46}
+html[data-theme="dark"] .side-logo{box-shadow:inset 0 -4px 0 #145A52}
+html[data-theme="dark"] .pkind,html[data-theme="dark"] .mono{color:var(--teal-deep)}
+/* 직업마다 다른 파스텔 카드는 어둡게 섞고, 글자는 밝게 섞어요 */
+html[data-theme="dark"] :is(.dcard,.jcard,.rcard){background:color-mix(in oklab,var(--tbg) 15%,var(--card));border-color:color-mix(in oklab,var(--tline) 35%,var(--card))}
+html[data-theme="dark"] :is(.dcard .why,.dcard .nm,.jtop h3,.rcard .name,.jtrack,.chip,.jcard .pill){color:color-mix(in oklab,var(--tink) 38%,#fff)}
+html[data-theme="dark"] :is(.jtrack,.chip,.jcard .pill,.jfriend){background:color-mix(in oklab,var(--tbg) 8%,var(--paper));border-color:color-mix(in oklab,var(--tline) 35%,var(--card))}
+html[data-theme="dark"] .jstop.end .jcard{background:var(--card)}
+html[data-theme="dark"] .critter > ellipse:first-of-type{opacity:.35}
+html[data-theme="dark"] .modal{background:rgba(0,0,0,.6)}
+
+/* 사이드바 화면 설정 (다크 모드 · 움직임 줄이기) */
+.side-foot{position:sticky;bottom:calc(-14px - env(safe-area-inset-bottom,0px));margin-top:auto;display:grid;gap:2px;background:var(--card);padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));margin-bottom:calc(-14px - env(safe-area-inset-bottom,0px))}
+.side-prefs{display:grid;gap:2px;padding-top:8px;border-top:1px dashed var(--line)}
+.hover-only{display:none}
+@media (hover:hover) and (pointer:fine){.hover-only{display:inline}}
+.side-item.pref{font-size:14.5px}
+.switch{margin-left:auto;flex:none;width:36px;height:21px;border-radius:999px;background:var(--line);position:relative;transition:background .25s ease}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:15px;height:15px;border-radius:50%;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.3);transition:translate .35s var(--spring)}
+.pref[aria-pressed="true"] .switch{background:var(--teal)}
+.pref[aria-pressed="true"] .switch::after{translate:15px 0}
+html.side-mini .switch{display:none}
+/* Morphing: 해 ↔ 달 아이콘 */
+.theme-ico .core{fill:currentColor;stroke:none;transform-box:fill-box;transform-origin:center;transition:transform .45s var(--spring)}
+.theme-ico .mm{transition:transform .45s var(--out)}
+.theme-ico .rays{transform-origin:12px 12px;transition:opacity .3s ease,transform .45s var(--out)}
+html[data-theme="dark"] .theme-ico .core{transform:scale(1.45)}
+html[data-theme="dark"] .theme-ico .mm{transform:translate(-9px,5px)}
+html[data-theme="dark"] .theme-ico .rays{opacity:0;transform:rotate(45deg) scale(.6)}
+#motion-btn .wave{transition:d .35s ease}
+html.rm #motion-btn .wave{d:path("M3 12c2.5 0 5.5 0 8 0s5.5 0 8 0")}
+
+/* ----- Reduced Motion: 이동·확대 대신 짧은 Fade만 ----- */
+@keyframes rmFade{from{opacity:0}to{opacity:1}}
+html.rm *,html.rm *::before,html.rm *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+html.rm .view:not([hidden]){animation:rmFade .2s ease both!important}
+@media (prefers-reduced-motion:reduce){.view:not([hidden]){animation:rmFade .2s ease both!important}}
+html.rm .rise{opacity:1;transform:none}
+html.rm :is(.box,.pcard,.place,.guide,.fact,.jcard,.season-col,.mark,.panel,.dcard,.mini,.opt,.jfriend,.contact li,.faq details):hover{translate:none}
+html.rm .bgm-wave i{height:6px}
+
+/* ----- Typewriter: 첫 화면 제목 ----- */
+.tw .ch{visibility:hidden}
+.tw .ch.on{visibility:visible}
+.tw-cursor{display:inline-block;width:0;height:.95em;margin-right:-3px;border-right:3px solid var(--lime);vertical-align:-.08em;animation:caret .8s steps(1) infinite}
+@keyframes caret{50%{border-color:transparent}}
+
+/* ----- Bounce: 지난 결과 바로가기 ----- */
+.last-btn{display:inline-flex;align-items:center;gap:10px;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:4px 16px 4px 4px;cursor:pointer;text-align:left;font-size:14.5px;color:var(--ink)}
+.last-btn:hover{border-color:var(--teal)}
+.last-btn .tiny{width:40px;height:40px;border-radius:50%;background:var(--tbg);display:grid;place-items:center;overflow:hidden}
+.last-btn .tiny svg{width:36px;height:auto}
+.last-btn .tiny .bodyg{animation:none}
+.last-btn small{display:block;font-size:12px;color:var(--ink-soft);line-height:1.2}
+.last-btn b{font-family:var(--display);line-height:1.3}
+.last-btn.bounce{animation:bounceIn 1s both .4s}
+@keyframes bounceIn{
+  0%{opacity:0;transform:translateY(-36px)}
+  10%{opacity:1}
+  40%{transform:none;animation-timing-function:cubic-bezier(.3,0,.6,1)}
+  58%{transform:translateY(-12px);animation-timing-function:cubic-bezier(.4,0,.7,1)}
+  74%{transform:none;animation-timing-function:cubic-bezier(.3,0,.6,1)}
+  86%{transform:translateY(-4px)}
+  100%{opacity:1;transform:none}}
+
+/* ----- Magnetic Button ----- */
+.magnet{will-change:transform}
+
+/* ----- 퀴즈: 선택지 차례로 등장(Delay), 눌림(Scale), 키보드 힌트 ----- */
+.enter .opt{animation:optIn .4s var(--out) both;animation-delay:calc(var(--oi,0) * 60ms + 80ms)}
+@keyframes optIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.opt:active,.btn:active{scale:.95}
+.btn{transition:transform .15s ease,background .15s,scale .12s ease}
+.opt{transition:border-color .15s,background .15s,scale .12s ease}
+.kbd-hint{display:none;margin-top:16px;font-size:13px;color:var(--ink-soft)}
+@media (hover:hover) and (pointer:fine){.kbd-hint{display:block}}
+kbd{font-family:var(--body);font-size:12px;display:inline-block;min-width:22px;text-align:center;padding:0 6px;border:1px solid var(--line);border-bottom-width:2.5px;border-radius:6px;background:var(--card);color:var(--ink)}
+/* Loop: 답변을 살펴보는 동안 점 3개가 차례로 튀어요 */
+.analyzing{display:grid;justify-items:center;gap:8px;text-align:center;padding:56px 0 40px;animation:rmFade .3s ease both}
+.analyzing .an-title{font-family:var(--display);font-weight:700;font-size:22px;color:var(--teal-deep)}
+.dots{display:flex;gap:10px;height:40px;align-items:flex-end;margin-bottom:6px}
+.dots i{width:14px;height:14px;border-radius:50%;background:var(--teal);animation:jump .9s ease-in-out infinite}
+.dots i:nth-child(2){background:var(--lime);animation-delay:.15s}
+.dots i:nth-child(3){background:#F09A9A;animation-delay:.3s}
+@keyframes jump{0%,60%,100%{transform:none}30%{transform:translateY(-22px)}}
+html.rm .dots i{opacity:.4}html.rm .dots i:nth-child(2){opacity:.7}
+
+/* ----- Text Scramble: 결과 이름 ----- */
+.scrambling{color:var(--ink-soft)!important}
+.scrambling .sc{opacity:.55}
+
+/* ----- Confetti ----- */
+.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
+
+/* ----- Count-up ----- */
+.fact b,.srow .pct{font-variant-numeric:tabular-nums}
+.srow .bar i{transition:width 1.2s var(--out)}
+
+/* ----- Split Text: 제목 단어가 차례로 올라와요 ----- */
+.split .w{display:inline-block;white-space:pre}
+.split.play .w{animation:wordUp .6s var(--out) both;animation-delay:calc(var(--wi) * 80ms + 120ms)}
+@keyframes wordUp{from{opacity:0;transform:translateY(.55em) rotate(3deg)}to{opacity:1;transform:none}}
+
+/* ----- Marquee: 과목 이름이 끝없이 흘러요 ----- */
+.marquee-wrap{margin-top:36px;display:grid;gap:10px}
+.marquee-wrap .ch-label{font-size:13px;color:var(--teal);letter-spacing:.06em}
+html[data-theme="dark"] .marquee-wrap .ch-label{color:var(--hi)}
+.marquee{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.mq-track{display:flex;width:max-content;animation:mq 46s linear infinite}
+.marquee.rev .mq-track{animation-direction:reverse;animation-duration:54s}
+.marquee:hover .mq-track,.marquee:focus-within .mq-track{animation-play-state:paused}
+.mq-group{display:flex;gap:8px;padding-right:8px}
+.mq-item{white-space:nowrap;border-radius:999px;padding:6px 14px;font-size:14.5px;background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.mq-item::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--lime);margin-right:8px;vertical-align:.1em}
+.marquee.rev .mq-item{background:var(--teal-soft);border-color:transparent;color:var(--teal-deep)}
+.marquee.rev .mq-item::before{background:var(--teal)}
+@keyframes mq{to{transform:translateX(-50%)}}
+html.rm .marquee{overflow-x:auto;-webkit-mask-image:none;mask-image:none}
+@media (prefers-reduced-motion:reduce){.marquee{overflow-x:auto;-webkit-mask-image:none;mask-image:none}}
+
+/* ----- Motion Path: 종이비행기가 길을 따라 날아가요 ----- */
+.traveler{transition:opacity .3s ease}
+
+/* ----- 3D Tilt + 빛 반사 ----- */
+.tilt{position:relative;transform-style:preserve-3d;will-change:transform}
+.tilt::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s ease;
+  background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.45),transparent 55%)}
+.tilt.tilting::after{opacity:1}
+html[data-theme="dark"] .tilt::after{background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.12),transparent 55%)}
+
+/* ----- 직업 도감 검색 + Empty State ----- */
+.finder{display:grid;gap:10px;margin-top:22px}
+.search{display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px 8px 4px 16px;transition:border-color .15s,box-shadow .2s}
+.search:focus-within{border-color:var(--teal);box-shadow:0 0 0 4px var(--teal-soft)}
+.search .ico{color:var(--ink-soft)}
+.search input{flex:1;min-width:0;border:0;background:none;outline:none;font:inherit;font-size:16px;color:var(--ink);padding:9px 0}
+.search input::placeholder{color:var(--ink-soft);opacity:.85}
+.search .slash{display:none}
+@media (hover:hover) and (pointer:fine){.search .slash{display:inline-block}}
+.search:focus-within .slash{opacity:0}
+.tracks{display:flex;flex-wrap:wrap;gap:6px}
+.tracks button{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 13px;font-size:14px;color:var(--ink-soft);cursor:pointer;transition:background .15s,border-color .15s,color .15s,scale .12s}
+.tracks button:hover{border-color:var(--teal);color:var(--ink)}
+.tracks button:active{scale:.95}
+.tracks button[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.dex{margin-top:14px}
+.dcard .why{font-size:12.5px;line-height:1.4;color:var(--tink);background:var(--card);border-radius:999px;padding:1px 9px;margin-top:2px}
+.dcard .why:empty{display:none}
+.dcard.pop{animation:popIn .35s var(--spring) both;animation-delay:calc(var(--pi,0) * 40ms)}
+@keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+mark{background:var(--lime-soft);color:inherit;border-radius:4px;padding:0 2px}
+.empty{display:grid;justify-items:center;text-align:center;gap:8px;margin-top:14px;padding:32px 20px;background:var(--card);border:1.5px dashed var(--line);border-radius:24px;animation:popIn .35s var(--out) both}
+.empty svg{width:88px;height:88px;color:var(--teal-deep)}
+.empty b{font-family:var(--display);font-size:19px;color:var(--teal-deep)}
+.empty .btn{margin-top:6px}
+
+/* ----- UI States: Loading · Disabled ----- */
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn[aria-busy="true"]{opacity:1;cursor:progress}
+.spin{width:16px;height:16px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ----- Accordion: FAQ가 0.3초 동안 펼쳐져요 (+ ↔ − Morphing) ----- */
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"";flex:none;margin-left:auto;align-self:center;width:14px;height:14px;
+  background:linear-gradient(currentColor,currentColor) center/14px 2px no-repeat,linear-gradient(currentColor,currentColor) center/2px 14px no-repeat;
+  transition:background-size .3s ease,transform .3s var(--out)}
+.faq details.is-open summary::after{background-size:14px 2px,2px 0;transform:rotate(180deg)}
+.faq details p{overflow:hidden}
+
+/* ----- 스크롤 진행 막대 · 맨 위로 · 여정 선 그리기 ----- */
+.scroll-prog{position:fixed;top:0;left:0;right:0;height:3px;z-index:46;pointer-events:none;opacity:0;transition:opacity .2s}
+.scroll-prog.on{opacity:1}
+.scroll-prog i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--lime));transform-origin:0 50%;transform:scaleX(var(--p,0))}
+.to-top{position:fixed;z-index:42;right:calc(22px + env(safe-area-inset-right,0px));bottom:calc(80px + env(safe-area-inset-bottom,0px));width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--ink-soft);display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 18px -10px rgba(0,0,0,.45);animation:popIn .3s var(--spring) both}
+.to-top:hover{color:var(--teal-deep);border-color:var(--teal)}
+.to-top .ico{width:20px;height:20px}
+.journey::after{content:"";position:absolute;left:20px;top:20px;width:5px;height:calc(100% - 40px);border-radius:3px;background:linear-gradient(var(--teal),var(--lime));transform-origin:top;transform:scaleY(var(--jp,0));z-index:0}
+.jmark{transition:box-shadow .35s ease,scale .35s var(--spring)}
+.jstop.reached .jmark{box-shadow:0 0 0 5px var(--paper),0 0 0 8px var(--lime);scale:1.06}
+html.rm .journey::after{transform:scaleY(1)}
+
+/* ----- Fade · Slide · Scale: 토스트, 모달 ----- */
+.toast:not([hidden]){animation:toastIn .32s var(--out) both}
+.toast.out{animation:toastOut .22s ease-in both}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes toastOut{to{opacity:0;transform:translate(-50%,10px)}}
+.toast{color:var(--paper)}
+.modal:not([hidden]){animation:rmFade .2s ease both}
+.modal:not([hidden]) .sheet{animation:sheetIn .35s var(--spring) both}
+@keyframes sheetIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+
+/* ----- Page Transition + Shared Element Transition (View Transitions) ----- */
+::view-transition-old(root){animation:vtOut .2s ease-in both}
+::view-transition-new(root){animation:vtIn .34s var(--out) both}
+@keyframes vtOut{to{opacity:0}}
+@keyframes vtIn{from{opacity:0;transform:translateY(14px)}}
+::view-transition-group(shared-animal){animation-duration:.5s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-old(shared-animal),::view-transition-new(shared-animal){height:100%;object-fit:contain}
 </style>
 
 <header class="top">
@@ -477,7 +712,13 @@ a.place:hover .pgo{text-decoration:underline}
       <ul class="side-sub" id="sg-dept"></ul>
     </div>
   </nav>
+  <div class="side-foot">
+  <div class="side-prefs" role="group" aria-label="화면 설정">
+    <button class="side-item pref" id="theme-btn" type="button" aria-pressed="false" title="다크 모드"><svg class="ico theme-ico" viewBox="0 0 24 24" aria-hidden="true"><mask id="moon-mask"><rect width="24" height="24" fill="#fff"/><circle class="mm" cx="25" cy="3" r="6" fill="#000"/></mask><circle class="core" cx="12" cy="12" r="5" mask="url(#moon-mask)"/><g class="rays"><path d="M12 2.5v2M12 19.5v2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M2.5 12h2M19.5 12h2M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g></svg><span class="side-text">다크 모드</span><span class="switch side-text" aria-hidden="true"></span></button>
+    <button class="side-item pref" id="motion-btn" type="button" aria-pressed="false" title="움직임 줄이기"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path class="wave" d="M3 12c2.5-5 5.5-5 8 0s5.5 5 8 0"/><path d="M4 19h16"/></svg><span class="side-text">움직임 줄이기</span><span class="switch side-text" aria-hidden="true"></span></button>
+  </div>
   <button class="side-collapse" id="side-collapse" type="button" aria-label="사이드바 접기" title="사이드바 접기"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6l-6 6 6 6"/><path d="M19 6l-6 6 6 6"/></svg><span class="side-text">사이드바 접기</span></button>
+  </div>
 </aside>
 
 <main>
@@ -485,7 +726,7 @@ a.place:hover .pgo{text-decoration:underline}
   <section class="view wrap" id="v-start">
     <div class="hero">
       <p class="eyebrow">미리 만나는 문헌정보학과</p>
-      <h1>문헌정보학과를 졸업하면<br>나는 어떤 일을 할까?</h1>
+      <h1 id="start-title">문헌정보학과를 졸업하면<br>나는 어떤 일을 할까?</h1>
       <p class="lead">질문 10개에 답하면 문헌정보학과를 졸업하고 갈 수 있는 여덟 가지 직업 중 나와 닮은 직업을 알려 드려요. 그 직업을 대구대 문헌정보학과에서 어떻게 준비하는지도 함께 보여 드릴게요.</p>
       <div class="shelf" id="shelf" aria-label="여덟 가지 직업 캐릭터"></div>
       <div class="start-actions">
@@ -493,6 +734,7 @@ a.place:hover .pgo{text-decoration:underline}
         <button class="btn ghost" type="button" data-go="types">직업 먼저 구경하기</button>
       </div>
       <p class="count-line" id="count-line">10문항 · 약 2분</p>
+      <div id="last-result"></div>
     </div>
   </section>
 
@@ -505,8 +747,14 @@ a.place:hover .pgo{text-decoration:underline}
     <div id="qbox" class="enter">
       <h2 class="qtext" id="qtext"></h2>
       <div class="opts" id="opts"></div>
+      <p class="kbd-hint">키보드 <kbd>1</kbd>~<kbd>4</kbd>로 고르고, <kbd>←</kbd>로 이전 질문에 돌아가요</p>
     </div>
-    <div class="quiz-foot">
+    <div class="analyzing" id="analyzing" role="status" hidden>
+      <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+      <p class="an-title">답변 10개를 살펴보고 있어요</p>
+      <p class="note">나와 닮은 직업 친구를 찾는 중</p>
+    </div>
+    <div class="quiz-foot" id="quiz-foot">
       <button class="linkbtn" type="button" id="prev-btn">← 이전 질문</button>
       <button class="linkbtn" type="button" id="quit-btn">처음으로</button>
     </div>
@@ -520,7 +768,22 @@ a.place:hover .pgo{text-decoration:underline}
     <p class="eyebrow">직업 도감</p>
     <h1>나에게 꼭 맞는<br>직업 친구는?</h1>
     <p class="muted" style="margin-top:10px">문헌정보학과를 졸업하면 갈 수 있는 길이에요. 궁금한 친구를 눌러 보세요.</p>
+    <div class="finder">
+      <label class="search" for="dex-q">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+        <input id="dex-q" type="search" placeholder="직업, 과목, 자격증으로 찾기 (예: 데이터, 독서지도)" autocomplete="off" aria-describedby="dex-count">
+        <kbd class="slash" aria-hidden="true">/</kbd>
+      </label>
+      <div class="tracks" id="dex-tracks" role="group" aria-label="트랙으로 고르기"></div>
+      <p class="note" id="dex-count" aria-live="polite"></p>
+    </div>
     <div class="dex" id="dex"></div>
+    <div class="empty" id="dex-empty" hidden>
+      <svg viewBox="0 0 96 96" aria-hidden="true"><circle cx="42" cy="42" r="24" fill="var(--teal-soft)" stroke="currentColor" stroke-width="3"/><path d="M60 60l18 18" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M33 47q9-7 18 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="35" cy="38" r="2.6" fill="currentColor"/><circle cx="49" cy="38" r="2.6" fill="currentColor"/></svg>
+      <b id="dex-empty-title">찾는 직업이 없어요</b>
+      <p class="muted">다른 낱말로 찾아보거나, 트랙을 ‘전체’로 바꿔 보세요.</p>
+      <button class="btn small" type="button" id="dex-reset">전체 보기</button>
+    </div>
     <div class="cta">
       <h3>나는 어느 친구와 닮았을까?</h3>
       <p>질문 10개면 알 수 있어요.</p>
@@ -533,7 +796,7 @@ a.place:hover .pgo{text-decoration:underline}
     <div class="dhero">
       <div class="dhero-art" id="book-art" role="button" tabindex="0" aria-label="책장 넘기기" title="눌러서 책장 넘기기">
         <svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg">
-          <path d="M70 128 C 120 150, 160 70, 210 92 S 280 40, 296 26" fill="none" stroke="#0F6E66" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+          <path id="route-path" d="M70 128 C 120 150, 160 70, 210 92 S 280 40, 296 26" fill="none" stroke="#0F6E66" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
           <g stroke="#6B5444" stroke-width="2.4" stroke-linejoin="round">
             <path d="M20 118 q30 -12 56 0 v38 q-26 -10 -56 0z" fill="#FFF4CF"/>
             <path d="M132 118 q-30 -12 -56 0 v38 q26 -10 56 0z" fill="#DCEDE8"/>
@@ -542,16 +805,24 @@ a.place:hover .pgo{text-decoration:underline}
             <path d="M296 26 v-20 l18 7 l-18 7" fill="#CFDD5C"/>
           </g>
           <circle cx="132" cy="104" r="5" fill="#CFDD5C"/><circle cx="210" cy="92" r="5" fill="#CFDD5C"/><circle cx="262" cy="52" r="5" fill="#CFDD5C"/>
+          <g id="traveler" class="traveler" opacity="0"><path d="M-10 -6 L11 0 L-10 6 L-5 0 Z" fill="#FFFDF8" stroke="#6B5444" stroke-width="1.8" stroke-linejoin="round"/><path d="M-5 0 L11 0" stroke="#6B5444" stroke-width="1.2"/>
+            <animateMotion id="traveler-move" dur="2.2s" begin="indefinite" fill="freeze" rotate="auto" calcMode="spline" keyPoints="0;1" keyTimes="0;1" keySplines=".45 0 .25 1"><mpath href="#route-path"/></animateMotion></g>
         </svg>
       </div>
       <p class="eyebrow">대구대학교 문헌정보학과</p>
       <h1>책 한 권의 여행</h1>
       <p class="dlead">도서관 서가에 꽂힌 책 한 권은 그냥 거기 있는 게 아니에요. 누군가 고르고, 이름표를 붙이고, 찾는 길을 만들고, 필요한 사람에게 건네고, 오래 지켜 온 거예요. 문헌정보학과는 책과 정보가 필요한 사람에게 닿기까지의 모든 길을 배우는 곳이에요.</p>
       <div class="facts">
-        <div class="fact"><b>1980</b><span>도서관학과로 출발한 해</span></div>
-        <div class="fact"><b>6개</b><span>전공 트랙</span></div>
+        <div class="fact"><b data-count="1980" data-from="1900">1980</b><span>도서관학과로 출발한 해</span></div>
+        <div class="fact"><b data-count="6" data-suffix="개">6개</b><span>전공 트랙</span></div>
         <div class="fact"><b>정사서 2급</b><span>졸업과 함께 받는 국가자격</span></div>
       </div>
+    </div>
+
+    <div class="marquee-wrap" aria-label="4년 동안 배우는 과목들">
+      <p class="ch-label">4년 동안 배우는 과목들<span class="hover-only"> · 마우스를 올리면 멈춰요</span></p>
+      <div class="marquee" id="mq1"></div>
+      <div class="marquee rev" id="mq2"></div>
     </div>
 
     <div class="chapter">
@@ -635,6 +906,9 @@ a.place:hover .pgo{text-decoration:underline}
   </div>
 </div>
 <div class="toast" id="toast" hidden></div>
+<div class="scroll-prog" id="scroll-prog" aria-hidden="true"><i></i></div>
+<button class="to-top" id="to-top" type="button" aria-label="맨 위로" title="맨 위로" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+<canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
 <button class="bgm-btn" id="bgm-btn" type="button" aria-pressed="false" aria-label="오르골 음악 켜기" title="오르골 음악 켜기"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg><span class="bgm-wave" aria-hidden="true"><i></i><i></i><i></i></span></button>
 
 <script>
@@ -883,11 +1157,12 @@ function show(view){
 function go(hash){ if (location.hash.slice(1) === hash) route(); else location.hash = hash; }
 function route(){
   const h = location.hash.slice(1);
-  if (h === "types") return show("types");
+  if (h === "types") { show("types"); if (!reduced()) playSplit(document.querySelector("#v-types h1")); return; }
   if (h === "dept") { show("dept"); playDeptHero(); armRise(); if (pendingJump) { const id = pendingJump; pendingJump = null; setTimeout(() => jumpTo(id), 60); } return; }
   if (h === "quiz") { if (!state.answers.length) state.i = 0; renderQ(); return show("quiz"); }
   if (h.startsWith("r-") && TYPES[h.slice(2)]) { renderResult(h.slice(2)); return show("result"); }
-  show("start");
+  show("start"); renderLast();
+  if (!route.typed) { route.typed = true; typewriter($("start-title")); }
 }
 
 /* ---------- 시작 화면 ---------- */
@@ -909,15 +1184,18 @@ function renderQ(){
   $("pbar").setAttribute("aria-valuenow", state.i+1);
   $("qtext").textContent = q;
   const sel = state.answers[state.i];
-  $("opts").innerHTML = opts.map((o,j) => `<button type="button" class="opt${sel===j?" sel":""}" data-j="${j}"><span class="k">${"ABCDE"[j]}</span><span>${esc(o[0])}</span></button>`).join("");
+  $("opts").innerHTML = opts.map((o,j) => `<button type="button" class="opt${sel===j?" sel":""}" data-j="${j}" style="--oi:${j}"><span class="k">${"ABCDE"[j]}</span><span>${esc(o[0])}</span></button>`).join("");
   $("prev-btn").disabled = state.i === 0;
+  $("analyzing").hidden = true; $("qbox").hidden = false; $("quiz-foot").hidden = false;
   const box = $("qbox"); box.classList.remove("enter"); void box.offsetWidth; box.classList.add("enter");
 }
 $("opts").addEventListener("click", e => {
-  const b = e.target.closest(".opt"); if (!b) return;
+  const b = e.target.closest(".opt"); if (!b || state.busy) return;
   state.answers[state.i] = +b.dataset.j;
   document.querySelectorAll(".opt").forEach(x => x.classList.toggle("sel", x === b));
+  state.busy = true;
   setTimeout(() => {
+    state.busy = false;
     if (state.i < QUESTIONS.length - 1) { state.i++; renderQ(); }
     else finish();
   }, 220);
@@ -938,8 +1216,20 @@ function finish(){
   state.mine = pick; state.answers = [];
   try { localStorage.setItem("lis-mine", pick); } catch(e) {}
   saveResult(pick);
-  go("r-" + pick);
+  // Loop: 결과로 가기 전에 잠깐 '살펴보는 중' 화면을 보여 줘요
+  state.busy = true;
+  $("qbox").hidden = true; $("quiz-foot").hidden = true; $("analyzing").hidden = false;
+  setTimeout(() => { state.busy = false; state.fresh = pick; go("r-" + pick); }, reduced() ? 350 : 1300);
 }
+// 키보드로 답 고르기: 1~4 또는 A~D, ← / Backspace 로 이전 질문
+document.addEventListener("keydown", e => {
+  if ($("v-quiz").hidden || state.busy || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.closest && e.target.closest("input,textarea")) return;
+  if (!$("modal").hidden || document.documentElement.classList.contains("side-open")) return;
+  const k = e.key.toLowerCase(), n = "1234".indexOf(k) >= 0 ? "1234".indexOf(k) : "abcd".indexOf(k);
+  if (n >= 0 && k.length === 1) { const b = document.querySelectorAll("#opts .opt")[n]; if (b) { e.preventDefault(); b.click(); b.focus({preventScroll:true}); } }
+  else if ((e.key === "ArrowLeft" || e.key === "Backspace") && state.i > 0) { e.preventDefault(); $("prev-btn").click(); }
+});
 
 /* ---------- 결과 ---------- */
 function miniCard(k, label){
@@ -1004,14 +1294,30 @@ function renderResult(k){
       <p>교육과정, 공부하는 공간, 학과생활, 졸업 후 진로까지 한곳에 모았어요.</p>
       <button class="btn small" type="button" data-go="dept">학과 소개 보기</button>
     </div>`;
-  $("save-img").onclick = () => makeImage(k);
+  $("save-img").onclick = async e => {
+    // UI States: 만드는 동안 Loading 상태로 바꿔 두 번 눌리지 않게 해요
+    const b = e.currentTarget; if (b.getAttribute("aria-busy") === "true") return;
+    const label = b.innerHTML; b.disabled = true; b.setAttribute("aria-busy", "true");
+    b.innerHTML = `<span class="spin" aria-hidden="true"></span>만드는 중…`;
+    try { await makeImage(k); } finally { b.disabled = false; b.removeAttribute("aria-busy"); b.innerHTML = label; }
+  };
+  const card = el.querySelector(".rcard");
+  card.classList.add("tilt");
+  card.addEventListener("animationend", ev => { if (ev.target === card) card.classList.remove("enter"); }, { once: true });
   renderStats();
+  if (state.fresh === k) {
+    state.fresh = null;
+    if (!reduced()) {
+      scramble(el.querySelector(".rcard .name"), 1000, 250);
+      setTimeout(() => confettiBurst(card), 1150);
+    }
+  }
 }
 
 /* ---------- 도감 & 학과 ---------- */
 function renderDex(){
   $("dex").innerHTML = ORDER.map(k => { const t = TYPES[k];
-    return `<button type="button" class="dcard" data-type="${k}" style="--tbg:${t.bg};--tline:${t.line};--tink:${t.ink}">${animalSVG(t.draw)}<span class="nm">${t.name}</span><span class="an">${t.animal}</span></button>`; }).join("");
+    return `<button type="button" class="dcard tilt" data-type="${k}" data-track="${t.track}" style="--tbg:${t.bg};--tline:${t.line};--tink:${t.ink}">${animalSVG(t.draw)}<span class="nm">${t.name}</span><span class="an">${t.animal}</span><span class="why"></span></button>`; }).join("");
 }
 const JOURNEY = [
   { start:true, t:"출발 준비", q:"정보는 왜 정리해야 할까?", d:"1학년에는 문헌정보학이 무엇을 하는 학문인지, 정보 사회에서 우리가 어떤 시민이어야 하는지 큰 그림부터 그려요.", courses:["문헌정보학이해","디지털시민사회이야기"] },
@@ -1078,27 +1384,41 @@ function renderDept(){
   }).join("");
   $("practice").innerHTML = PRACTICE.map(([t,w,d]) => `<div class="pcard"><span class="pwhen">${w}</span><b>${t}</b><p>${d}</p></div>`).join("");
   $("marks").innerHTML = CLUBS.map(([n,d]) => `<div class="mark"><b>${n}</b><span>${d}</span></div>`).join("");
+  // Marquee: 과목 이름을 두 줄로 나눠 반대 방향으로 흘려요 (끊김 없게 두 번 이어 붙임)
+  const all = [...new Set(JOURNEY.flatMap(s => s.courses).concat(["도서관실무실습","현장실습"]))];
+  const half = Math.ceil(all.length / 2);
+  [["mq1", all.slice(0, half)], ["mq2", all.slice(half)]].forEach(([id, list]) => {
+    const g = list.map(c => `<span class="mq-item">${c}</span>`).join("");
+    $(id).innerHTML = `<div class="mq-track"><div class="mq-group">${g}</div><div class="mq-group" aria-hidden="true">${g}</div></div>`;
+  });
   $("guides").innerHTML = GUIDES.map(([nm,role,mail,subj,kind,bg]) => `<div class="guide">${bustSVG(kind,bg)}<div class="ginfo"><div><b>${nm}</b><span class="role">${role}</span></div>${mail ? `<p class="mail">${mail}</p>` : ""}<div class="pills">${subj.map(x=>`<span class="pill">${x}</span>`).join("")}</div></div></div>`).join("");
 }
 
 /* ---------- 학과 소개: 위에서부터 차례로 나타나기 ---------- */
 const REDUCE = matchMedia("(prefers-reduced-motion: reduce)");
+/* Reduced Motion: 운영체제 설정 또는 사이트의 '움직임 줄이기' 스위치 */
+function reduced(){ return REDUCE.matches || document.documentElement.classList.contains("rm"); }
 function playDeptHero(){
   const hero = document.querySelector("#v-dept .dhero"); if (!hero) return;
   [...hero.children].forEach((el, i) => el.style.setProperty("--i", i));
   hero.querySelectorAll(".fact").forEach((el, i) => el.style.setProperty("--i", 4 + i));
   $("book-art").classList.remove("flipping"); hero.classList.remove("seq"); void hero.offsetWidth;
-  if (!REDUCE.matches) { hero.classList.add("seq"); if (typeof BGM !== "undefined") BGM.rustle([450, 630, 810, 990]); }
+  if (!reduced()) {
+    hero.classList.add("seq"); if (typeof BGM !== "undefined") BGM.rustle([450, 630, 810, 990]);
+    playSplit(hero.querySelector("h1"));
+    hero.querySelectorAll("[data-count]").forEach(b => countUp(b, +b.dataset.count, { from: +(b.dataset.from || 0), suffix: b.dataset.suffix || "", dur: 1600, delay: 700, comma: false }));
+    flyTraveler(1300);
+  }
 }
 let riseObs = null;
 function setupRise(){
-  if (REDUCE.matches || !("IntersectionObserver" in window)) return;
+  if (reduced() || !("IntersectionObserver" in window)) return;
   riseObs = new IntersectionObserver(entries => entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add("in"); riseObs.unobserve(e.target); }
   }), { rootMargin: "0px 0px -8% 0px" });
 }
 function armRise(){
-  if (!riseObs) return;
+  if (!riseObs || reduced()) return;
   const targets = [...document.querySelectorAll("#v-dept .chapter > *:not(.journey)"), ...document.querySelectorAll("#v-dept .jstop")];
   targets.forEach((el, i) => {
     el.classList.remove("in"); el.classList.add("rise");
@@ -1154,7 +1474,7 @@ function syncSide(view){
 function jumpTo(id){
   const el = $(id); if (!el) return;
   el.querySelectorAll(".rise").forEach(x => x.classList.add("in"));
-  el.scrollIntoView({ behavior: REDUCE.matches ? "auto" : "smooth", block: "start" });
+  el.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "start" });
 }
 $("menu-btn").addEventListener("click", () => openSide(true));
 $("side-close").addEventListener("click", () => openSide(false));
@@ -1178,7 +1498,7 @@ $("side").addEventListener("click", e => {
     if (location.hash.slice(1) === "dept") jumpTo(d.dataset.djump);
     else { pendingJump = d.dataset.djump; go("dept"); }
   }
-  if (e.target.closest("button:not(.side-fold)")) openSide(false);
+  if (e.target.closest("button:not(.side-fold):not(.pref)")) openSide(false);
 });
 
 /* ---------- 오르골 배경음악 (직접 합성한 곡) ---------- */
@@ -1290,9 +1610,10 @@ if (store("lis-bgm") === "1") {
 
 /* ---------- 책 누르면 책장 다시 넘기기 ---------- */
 function flipBook(){
-  const art = $("book-art"); if (!art || REDUCE.matches) return;
+  const art = $("book-art"); if (!art || reduced()) return;
   art.classList.remove("flipping"); void art.offsetWidth; art.classList.add("flipping");
   if (typeof BGM !== "undefined") BGM.rustle([0, 180, 360, 540]);
+  flyTraveler(700);
 }
 $("book-art").addEventListener("click", flipBook);
 $("book-art").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flipBook(); } });
@@ -1302,14 +1623,18 @@ document.addEventListener("click", e => {
   const s = e.target.closest("[data-start]"); if (s) return startQuiz();
   const g = e.target.closest("[data-go]"); if (g) return go(g.dataset.go);
   const t = e.target.closest("[data-type]"); if (t) return go("r-" + t.dataset.type);
-  const j = e.target.closest("[data-jump]"); if (j) { const el = $(j.dataset.jump); el && el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); }
+  const j = e.target.closest("[data-jump]"); if (j) { const el = $(j.dataset.jump); el && el.scrollIntoView({behavior: reduced() ? "auto" : "smooth"}); }
 });
 $("go-home").onclick = () => go("");
 $("start-btn").onclick = startQuiz;
 
 /* ---------- 결과 이미지 ---------- */
 let downloads = null, lastBlob = null, lastName = "";
-function toast(msg){ const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2600); }
+function toast(msg){
+  const t = $("toast"); t.textContent = msg; t.classList.remove("out"); t.hidden = false;
+  clearTimeout(toast.t); clearTimeout(toast.t2);
+  toast.t = setTimeout(() => { t.classList.add("out"); toast.t2 = setTimeout(() => { t.hidden = true; t.classList.remove("out"); }, reduced() ? 0 : 220); }, 2600);
+}
 function loadImg(src){ return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
 async function makeImage(k){
   const t = TYPES[k]; const mine = state.mine === k;
@@ -1406,10 +1731,19 @@ function renderStats(){
   sec.hidden = false;
   const max = Math.max(...Object.values(state.counts), 1);
   const cur = location.hash.slice(3);
-  $("stats").innerHTML = ORDER.slice().sort((a,b) => state.counts[b]-state.counts[a]).map(k => {
+  const box = $("stats"), first = !box.dataset.anim && !reduced();
+  box.innerHTML = ORDER.slice().sort((a,b) => state.counts[b]-state.counts[a]).map(k => {
     const n = state.counts[k], p = Math.round(n/total*100);
-    return `<div class="srow${k===cur?" me":""}"><span class="n">${TYPES[k].name}</span><span class="bar"><i style="width:${n/max*100}%"></i></span><span class="pct">${p}%</span></div>`;
+    return `<div class="srow${k===cur?" me":""}"><span class="n">${TYPES[k].name}</span><span class="bar"><i style="width:${first ? 0 : n/max*100}%" data-w="${n/max*100}"></i></span><span class="pct" data-p="${p}">${first ? 0 : p}%</span></div>`;
   }).join("");
+  if (first) {
+    // Count-up: 통계가 화면에 보이면 막대가 자라고 숫자가 올라가요
+    box.dataset.anim = "1";
+    whenVisible(box, () => {
+      box.querySelectorAll(".bar i").forEach(i => i.style.width = i.dataset.w + "%");
+      box.querySelectorAll(".pct").forEach(s => countUp(s, +s.dataset.p, { suffix: "%", dur: 1200 }));
+    });
+  }
   $("stat-note").textContent = usePublic ? `지금까지 테스트 결과가 ${total}번 나왔어요.` : `지금까지 ${total}명이 참여했어요.`;
 }
 function renderCount(){
@@ -1440,9 +1774,357 @@ async function saveResult(k){
   } catch(e) { statsTried = true; renderStats(); }
 })();
 
+/* =====================================================================
+   움직임과 표현 (바이브코딩 2편) 기능 모음
+   ===================================================================== */
+const HTML = document.documentElement;
+const FINE = matchMedia("(hover:hover) and (pointer:fine)");
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+/* 화면에 보이면 한 번 실행 */
+function whenVisible(el, fn){
+  if (!("IntersectionObserver" in window)) return fn();
+  const io = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) { io.disconnect(); fn(); } }, { threshold: .25 });
+  io.observe(el);
+}
+
+/* Count-up: from → to, 끝으로 갈수록 느려지게(ease-out) */
+function countUp(el, to, { from = 0, dur = 2000, delay = 0, suffix = "", comma = true } = {}){
+  if (reduced()) { el.textContent = (comma ? to.toLocaleString("ko-KR") : to) + suffix; return; }
+  const fmt = v => (comma ? Math.round(v).toLocaleString("ko-KR") : Math.round(v)) + suffix;
+  el.textContent = fmt(from);
+  setTimeout(() => {
+    const t0 = performance.now();
+    const step = now => {
+      const p = clamp((now - t0) / dur, 0, 1), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(from + (to - from) * e);
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, delay);
+}
+
+/* Typewriter: 글자당 약 60ms, 불규칙한 간격 + 깜빡이는 커서. 자리를 미리 잡아 두어 줄이 흔들리지 않아요 */
+function typewriter(el){
+  if (!el || reduced()) return;
+  const label = [...el.childNodes].map(n => n.nodeName === "BR" ? " " : n.textContent).join("");
+  el.setAttribute("aria-label", label);
+  const wrap = document.createElement("span"); wrap.className = "tw"; wrap.setAttribute("aria-hidden", "true");
+  [...el.childNodes].forEach(n => {
+    if (n.nodeName === "BR") { wrap.appendChild(document.createElement("br")); return; }
+    [...n.textContent].forEach(c => { const s = document.createElement("span"); s.className = "ch"; s.textContent = c; wrap.appendChild(s); });
+  });
+  el.replaceChildren(wrap);
+  const chars = [...wrap.querySelectorAll(".ch")], cur = document.createElement("span");
+  cur.className = "tw-cursor"; wrap.insertBefore(cur, wrap.firstChild);
+  let i = 0;
+  const next = () => {
+    if (i >= chars.length) { setTimeout(() => cur.remove(), 1800); return; }
+    const c = chars[i++]; c.classList.add("on"); c.after(cur);
+    setTimeout(next, c.textContent === " " ? 30 : 45 + Math.random() * 45);
+  };
+  setTimeout(next, 350);
+}
+
+/* Text Scramble: 무작위 글자가 바뀌다가 왼쪽부터 실제 이름으로 확정 */
+const SCRAMBLE_POOL = "가나다라마바사아자차카타파하문헌정보학도서관책기록사서데이터읽다";
+function scramble(el, dur = 1000, delay = 0){
+  if (!el) return;
+  const final = el.textContent, chars = [...final];
+  el.setAttribute("aria-label", final); el.classList.add("scrambling");
+  const rand = () => SCRAMBLE_POOL[Math.floor(Math.random() * SCRAMBLE_POOL.length)];
+  setTimeout(() => {
+    const t0 = performance.now(); let last = 0;
+    const step = now => {
+      const p = clamp((now - t0) / dur, 0, 1), done = Math.floor(p * chars.length);
+      if (now - last > 45 || p === 1) {
+        last = now;
+        el.innerHTML = chars.map((c, i) => i < done || /[\s·]/.test(c) ? esc(c) : `<span class="sc">${rand()}</span>`).join("");
+      }
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = final; el.classList.remove("scrambling"); el.removeAttribute("aria-label"); }
+    };
+    requestAnimationFrame(step);
+  }, delay);
+}
+
+/* Confetti: 결과 카드에서 색종이 80개가 위로 퍼졌다 떨어지고 2초 안에 사라져요 */
+function confettiBurst(originEl, count = 80){
+  const cv = $("confetti"); if (!cv || !cv.getContext || reduced()) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const x = cv.getContext("2d"); x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const r = originEl.getBoundingClientRect(), ox = r.left + r.width / 2, oy = r.top + Math.min(r.height * .35, 160);
+  const COLORS = ["#0F6E66", "#CFDD5C", "#F09A9A", "#F6C453", "#8FB8E8", "#C4B6E0"];
+  const P = Array.from({ length: count }, () => {
+    const a = (-90 + (Math.random() - .5) * 110) * Math.PI / 180, s = 7 + Math.random() * 8;
+    return { x: ox, y: oy, vx: Math.cos(a) * s, vy: Math.sin(a) * s, w: 6 + Math.random() * 6, h: 4 + Math.random() * 6,
+             rot: Math.random() * 6, vr: (Math.random() - .5) * .4, c: COLORS[Math.floor(Math.random() * COLORS.length)], round: Math.random() < .3 };
+  });
+  const t0 = performance.now(); let prev = t0;
+  const frame = now => {
+    const dt = Math.min(2, (now - prev) / 16.67), age = (now - t0) / 1000; prev = now;
+    x.clearRect(0, 0, W, H);
+    P.forEach(p => {
+      p.vy += .32 * dt; p.vx *= Math.pow(.985, dt); p.vy *= Math.pow(.985, dt);
+      p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
+      x.save(); x.globalAlpha = clamp((2 - age) / .6, 0, 1); x.translate(p.x, p.y); x.rotate(p.rot); x.fillStyle = p.c;
+      if (p.round) { x.beginPath(); x.arc(0, 0, p.w / 2.4, 0, Math.PI * 2); x.fill(); }
+      else { x.scale(1, Math.cos(p.rot * 1.7)); x.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); }
+      x.restore();
+    });
+    if (age < 2) requestAnimationFrame(frame); else x.clearRect(0, 0, W, H);
+  };
+  requestAnimationFrame(frame);
+}
+
+/* Split Text: 제목을 단어 단위로 나눠 0.08초 간격으로 올라오게 */
+function playSplit(el){
+  if (!el || reduced()) return;
+  if (!el.classList.contains("split")) {
+    const label = [...el.childNodes].map(n => n.nodeName === "BR" ? " " : n.textContent).join("");
+    let wi = 0; const frag = document.createElement("span"); frag.setAttribute("aria-hidden", "true");
+    [...el.childNodes].forEach(n => {
+      if (n.nodeName === "BR") { frag.appendChild(document.createElement("br")); return; }
+      n.textContent.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(" ")); return; }
+        const s = document.createElement("span"); s.className = "w"; s.style.setProperty("--wi", wi++); s.textContent = part; frag.appendChild(s);
+      });
+    });
+    el.replaceChildren(frag); el.setAttribute("aria-label", label); el.classList.add("split");
+  }
+  el.classList.remove("play"); void el.offsetWidth; el.classList.add("play");
+}
+
+/* Motion Path: 종이비행기가 책에서 깃발까지 곡선을 따라 날아가요 (진행 방향으로 회전) */
+function flyTraveler(delay = 0){
+  const g = $("traveler"), m = $("traveler-move");
+  if (!g || !m || !m.beginElement || reduced()) return;
+  clearTimeout(flyTraveler.t1); clearTimeout(flyTraveler.t2);
+  flyTraveler.t1 = setTimeout(() => { g.style.opacity = "1"; m.beginElement(); }, delay);
+  flyTraveler.t2 = setTimeout(() => { g.style.opacity = "0"; }, delay + 2200 + 900);
+}
+
+/* Spring: 시간표가 아니라 힘(stiffness)과 저항(damping)으로 움직여요 */
+function spring(apply, { stiffness = 300, damping = 15, rest } = {}){
+  const x = {}, v = {}, t = {}; let raf = 0, last = 0;
+  const tick = now => {
+    const dt = last ? Math.min(.032, (now - last) / 1000) : 1 / 60; last = now;
+    let moving = false;
+    for (const k in t) {
+      v[k] += (-stiffness * (x[k] - t[k]) - damping * v[k]) * dt; x[k] += v[k] * dt;
+      if (Math.abs(v[k]) > .02 || Math.abs(x[k] - t[k]) > .02) moving = true; else { x[k] = t[k]; v[k] = 0; }
+    }
+    apply(x);
+    if (moving) raf = requestAnimationFrame(tick); else { raf = 0; last = 0; rest && rest(x); }
+  };
+  return { to(target){ for (const k in target) { if (!(k in x)) { x[k] = 0; v[k] = 0; } t[k] = target[k]; } if (!raf) raf = requestAnimationFrame(tick); } };
+}
+
+/* Magnetic Button: 마우스가 다가가면 최대 20px 끌려오고, 떠나면 Spring으로 제자리로 */
+const MAGNETS = [];
+function magnetic(btn, max = 20){
+  if (!btn) return;
+  btn.classList.add("magnet"); btn.style.transition = "background .15s, scale .12s ease";
+  const sp = spring(p => { btn.style.transform = `translate(${p.x.toFixed(2)}px,${p.y.toFixed(2)}px)`; },
+    { stiffness: 300, damping: 15, rest: p => { if (!p.x && !p.y) btn.style.transform = ""; } });
+  MAGNETS.push({ btn, sp, max, on: false });
+}
+let magRaf = 0, magEv = null;
+window.addEventListener("pointermove", e => {
+  if (!FINE.matches || reduced() || !MAGNETS.length) return;
+  magEv = e; if (magRaf) return;
+  magRaf = requestAnimationFrame(() => {
+    magRaf = 0;
+    MAGNETS.forEach(m => {
+      if (!m.btn.offsetParent) return;
+      const r = m.btn.getBoundingClientRect(), pad = 60;
+      const near = magEv.clientX > r.left - pad && magEv.clientX < r.right + pad && magEv.clientY > r.top - pad && magEv.clientY < r.bottom + pad;
+      if (near) { m.on = true; m.sp.to({ x: clamp((magEv.clientX - (r.left + r.width / 2)) * .35, -m.max, m.max), y: clamp((magEv.clientY - (r.top + r.height / 2)) * .35, -m.max, m.max) }); }
+      else if (m.on) { m.on = false; m.sp.to({ x: 0, y: 0 }); }
+    });
+  });
+}, { passive: true });
+
+/* 3D Tilt: 마우스 위치에 따라 최대 12도 기울고, 나가면 Spring으로 제자리로 */
+const TILTS = new WeakMap(); let curTilt = null;
+function tiltOf(card){
+  if (!TILTS.has(card)) TILTS.set(card, spring(p => { card.style.transform = `perspective(800px) rotateX(${p.rx.toFixed(2)}deg) rotateY(${p.ry.toFixed(2)}deg)`; },
+    { stiffness: 260, damping: 18, rest: p => { if (!p.rx && !p.ry) card.style.transform = ""; } }));
+  return TILTS.get(card);
+}
+function releaseTilt(card){ card.classList.remove("tilting"); tiltOf(card).to({ rx: 0, ry: 0 }); }
+document.addEventListener("pointermove", e => {
+  if (!FINE.matches || reduced()) return;
+  const card = e.target.closest ? e.target.closest(".tilt") : null;
+  if (card !== curTilt) { if (curTilt) releaseTilt(curTilt); curTilt = card; }
+  if (!card) return;
+  const r = card.getBoundingClientRect(), px = clamp((e.clientX - r.left) / r.width, 0, 1), py = clamp((e.clientY - r.top) / r.height, 0, 1);
+  const max = card.classList.contains("rcard") ? 7 : 12;
+  card.style.setProperty("--gx", (px * 100).toFixed(1) + "%"); card.style.setProperty("--gy", (py * 100).toFixed(1) + "%");
+  card.classList.add("tilting");
+  tiltOf(card).to({ rx: (.5 - py) * 2 * max, ry: (px - .5) * 2 * max });
+}, { passive: true });
+document.addEventListener("pointerout", e => { if (curTilt && (!e.relatedTarget || !curTilt.contains(e.relatedTarget))) { releaseTilt(curTilt); curTilt = null; } });
+
+/* 직업 도감 검색 + 트랙 필터 + Empty State */
+const DEX = { q: "", track: "전체" };
+const FIELDS = k => { const t = TYPES[k]; return [["직업", [t.name]], ["동물", [t.animal]], ["트랙", [t.track]], ["키워드", t.keys], ["과목", t.courses.flatMap(([, ...c]) => c)],
+  ["자격증", t.certs], ["동아리", t.clubs], ["소개", [t.tag]], ["하는 일", t.tasks], ["설명", [t.desc]]]; };
+const norm = s => s.toLowerCase().replace(/\s+/g, "");
+function hit(text, q){
+  const i = text.toLowerCase().indexOf(q.toLowerCase());
+  let s = text; if (s.length > 24) { const st = Math.max(0, (i < 0 ? 0 : i) - 8); s = (st ? "…" : "") + text.slice(st, st + 22) + (st + 22 < text.length ? "…" : ""); }
+  const j = s.toLowerCase().indexOf(q.toLowerCase());
+  return j < 0 ? esc(s) : esc(s.slice(0, j)) + `<mark>${esc(s.slice(j, j + q.length))}</mark>` + esc(s.slice(j + q.length));
+}
+function initFinder(){
+  const tracks = ["전체", ...new Set(ORDER.map(k => TYPES[k].track))];
+  $("dex-tracks").innerHTML = tracks.map(t => `<button type="button" data-track-f="${t}" aria-pressed="${t === "전체"}">${t}</button>`).join("");
+  $("dex-q").addEventListener("input", e => { DEX.q = e.target.value.trim(); filterDex(); });
+  $("dex-tracks").addEventListener("click", e => {
+    const b = e.target.closest("[data-track-f]"); if (!b) return;
+    DEX.track = b.dataset.trackF;
+    $("dex-tracks").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    filterDex();
+  });
+  $("dex-reset").addEventListener("click", () => {
+    DEX.q = ""; DEX.track = "전체"; $("dex-q").value = "";
+    $("dex-tracks").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x.dataset.trackF === "전체"));
+    filterDex(); $("dex-q").focus();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "/" && !$("v-types").hidden && !(e.target.closest && e.target.closest("input,textarea"))) { e.preventDefault(); $("dex-q").focus(); }
+    if (e.key === "Escape" && e.target === $("dex-q") && $("dex-q").value) { $("dex-q").value = ""; DEX.q = ""; filterDex(); }
+  });
+  filterDex();
+}
+function filterDex(){
+  const q = DEX.q, nq = norm(q); let n = 0, pi = 0;
+  document.querySelectorAll("#dex .dcard").forEach(c => {
+    const k = c.dataset.type, t = TYPES[k];
+    let ok = DEX.track === "전체" || t.track === DEX.track, why = "";
+    if (ok && nq) {
+      ok = false;
+      for (const [label, list] of FIELDS(k)) { const m = list.find(s => norm(s).includes(nq)); if (m) { ok = true; why = `${label} · ${hit(m, q)}`; break; } }
+    }
+    const was = !c.hidden; c.hidden = !ok; c.querySelector(".why").innerHTML = why;
+    if (ok) { n++; if (!was && !reduced()) { c.classList.remove("pop"); void c.offsetWidth; c.style.setProperty("--pi", pi++); c.classList.add("pop"); } }
+  });
+  const filtered = nq || DEX.track !== "전체";
+  $("dex-count").textContent = filtered ? `여덟 가지 직업 중 ${n}개가 맞아요` : "여덟 가지 직업이 있어요. 궁금한 낱말을 넣어 찾아보세요.";
+  $("dex-empty").hidden = n > 0;
+  $("dex-empty-title").textContent = q ? `‘${q}’에 맞는 직업이 없어요` : "이 트랙에 맞는 직업이 없어요";
+}
+
+/* Accordion: FAQ 답변이 0.3초 동안 펼쳐지고, + 아이콘이 − 로 바뀌어요 */
+function initFaq(){
+  document.querySelectorAll(".faq details").forEach(d => {
+    const s = d.querySelector("summary"), p = d.querySelector("p");
+    d.classList.toggle("is-open", d.open);
+    d.addEventListener("toggle", () => { if (!d.anim) d.classList.toggle("is-open", d.open); });
+    s.addEventListener("click", e => {
+      if (reduced() || !p.animate) return;
+      e.preventDefault();
+      const opening = !d.classList.contains("is-open");
+      if (d.anim) d.anim.cancel();
+      d.classList.toggle("is-open", opening);
+      if (opening) {
+        d.open = true; const h = p.scrollHeight;
+        d.anim = p.animate({ height: ["0px", h + "px"], opacity: [0, 1], marginTop: ["0px", "8px"] }, { duration: 300, easing: "cubic-bezier(.2,.7,.2,1)" });
+        d.anim.onfinish = () => { d.anim = null; };
+      } else {
+        const h = p.offsetHeight;
+        d.anim = p.animate({ height: [h + "px", "0px"], opacity: [1, 0], marginTop: ["8px", "0px"] }, { duration: 220, easing: "ease-in", fill: "forwards" });
+        d.anim.onfinish = () => { d.open = false; d.anim.cancel(); d.anim = null; };
+      }
+    });
+  });
+}
+
+/* 스크롤 진행 막대 · 맨 위로 버튼 · 여정 선이 스크롤에 맞춰 그려져요 */
+let scrollTick = false;
+function updateScroll(){
+  const max = document.documentElement.scrollHeight - innerHeight, y = scrollY;
+  const long = (!$("v-dept").hidden || !$("v-result").hidden) && max > 300;
+  const bar = $("scroll-prog"); bar.classList.toggle("on", long); bar.style.setProperty("--p", max > 0 ? (y / max).toFixed(4) : 0);
+  $("to-top").hidden = y < 700;
+  if (!$("v-dept").hidden) {
+    const j = $("journey"), r = j.getBoundingClientRect(), mid = innerHeight * .62;
+    j.style.setProperty("--jp", clamp((mid - r.top - 20) / (r.height - 40), 0, 1).toFixed(4));
+    j.querySelectorAll(".jstop").forEach(st => { const m = st.querySelector(".jmark").getBoundingClientRect(); st.classList.toggle("reached", m.top + m.height / 2 < mid); });
+  }
+}
+window.addEventListener("scroll", () => { if (scrollTick) return; scrollTick = true; requestAnimationFrame(() => { scrollTick = false; updateScroll(); }); }, { passive: true });
+window.addEventListener("resize", updateScroll, { passive: true });
+$("to-top").addEventListener("click", () => { window.scrollTo({ top: 0, behavior: reduced() ? "auto" : "smooth" }); });
+
+/* Bounce: 지난번 결과로 바로 가는 버튼 */
+function renderLast(){
+  const box = $("last-result"), k = state.mine;
+  if (!k || !TYPES[k]) { box.innerHTML = ""; return; }
+  const t = TYPES[k];
+  box.innerHTML = `<button type="button" class="last-btn${renderLast.done ? "" : " bounce"}" data-type="${k}" style="--tbg:${t.bg}"><span class="tiny">${animalSVG(t.draw)}</span><span><small>지난번 내 결과</small><b>${t.name}</b> 다시 보기 →</span></button>`;
+  renderLast.done = true;
+}
+
+/* Dark Mode · Reduced Motion 스위치 */
+function syncPrefs(){
+  const dark = HTML.dataset.theme === "dark";
+  $("theme-btn").setAttribute("aria-pressed", dark);
+  $("motion-btn").setAttribute("aria-pressed", reduced());
+  const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = dark ? "#1C1A17" : "#0F6E66";
+}
+function setTheme(t, animate){
+  if (animate && !reduced()) { HTML.classList.add("theme-anim"); clearTimeout(setTheme.t); setTheme.t = setTimeout(() => HTML.classList.remove("theme-anim"), 350); }
+  HTML.dataset.theme = t; syncPrefs();
+}
+$("theme-btn").addEventListener("click", () => {
+  const next = HTML.dataset.theme === "dark" ? "light" : "dark";
+  setTheme(next, true); store("lis-theme", next);
+  toast(next === "dark" ? "다크 모드를 켰어요" : "밝은 화면으로 바꿨어요");
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", e => { const s = store("lis-theme"); if (s !== "dark" && s !== "light") setTheme(e.matches ? "dark" : "light", true); });
+$("motion-btn").addEventListener("click", () => {
+  if (REDUCE.matches) { toast("기기 설정에서 ‘동작 줄이기’가 켜져 있어요"); return; }
+  const on = HTML.classList.toggle("rm"); store("lis-rm", on ? "1" : "0");
+  if (on) document.querySelectorAll(".rise").forEach(x => x.classList.add("in"));
+  syncPrefs(); toast(on ? "움직임을 줄였어요. 짧은 Fade만 써요" : "움직임 효과를 다시 켰어요");
+});
+REDUCE.addEventListener?.("change", syncPrefs);
+
+/* Page Transition + Shared Element Transition: 카드의 동물이 결과 화면의 큰 그림으로 이어져요 */
+let vtFrom = null, vtAt = 0;
+document.addEventListener("click", e => { const t = e.target.closest && e.target.closest("[data-type]"); vtFrom = t ? t.querySelector("svg") : null; vtAt = performance.now(); }, true);
+const inView = el => { if (!el) return false; const r = el.getBoundingClientRect(); return r.width > 0 && r.bottom > 0 && r.top < innerHeight; };
+function onHashChange(e){
+  const run = () => { route(); updateScroll(); };
+  if (!document.startViewTransition || reduced()) return run();
+  const oldH = e && e.oldURL && e.oldURL.includes("#") ? e.oldURL.split("#")[1] : "";
+  const prevKey = oldH.startsWith("r-") ? oldH.slice(2) : null;
+  let from = performance.now() - vtAt < 800 ? vtFrom : null; vtFrom = null;
+  if (!from && prevKey) from = document.querySelector("#v-result .rcard > svg");
+  if (!inView(from)) from = null;
+  if (from) from.style.viewTransitionName = "shared-animal";
+  let to = null;
+  const vt = document.startViewTransition(() => {
+    if (from) from.style.viewTransitionName = "";
+    run();
+    if (!from) return;
+    const h = location.hash.slice(1);
+    if (h.startsWith("r-")) to = document.querySelector("#v-result .rcard > svg");
+    else if (prevKey) to = document.querySelector(`#v-types:not([hidden]) .dcard[data-type="${prevKey}"]:not([hidden]) > svg`);
+    if (to && inView(to)) to.style.viewTransitionName = "shared-animal"; else to = null;
+  });
+  vt.finished.finally(() => { if (to) to.style.viewTransitionName = ""; });
+}
+
 renderStart(); renderDex(); renderDept(); initSide();
-window.addEventListener("hashchange", route);
-route();
+initFinder(); initFaq(); syncPrefs();
+magnetic($("start-btn")); magnetic(document.querySelector("#v-types .cta [data-start]"), 14);
+window.addEventListener("hashchange", onHashChange);
+route(); updateScroll();
 </script>
 
 </body>
